@@ -186,7 +186,9 @@ function BadgeCelebration({ ids, goals, close }) {
     {first ? <>
       <div className="ic" aria-hidden="true">{first.icon}</div>
       <h3 style={{ marginTop: 6 }}>{badges.length > 1 ? t('{0} new achievements!', badges.length) : t('Achievement unlocked!')}</h3>
-      {badges.map(b => <div key={b.id} style={{ margin: '8px 0' }}><strong>{b.icon} {t(b.name)}</strong><div className="small muted">{t(b.desc)}</div></div>)}
+      {/* A first sync or an import can earn a dozen at once: five, and the rest on the achievements screen. */}
+      {badges.slice(0, 5).map(b => <div key={b.id} style={{ margin: '8px 0' }}><strong>{b.icon} {t(b.name)}</strong><div className="small muted">{t(b.desc)}</div></div>)}
+      {badges.length > 5 && <div className="small muted">{t('and {0} more', badges.length - 5)}</div>}
     </> : <div className="ic" aria-hidden="true">🏁</div>}
     {goals.map(g => <div key={g.id} style={{ margin: '8px 0' }}><strong>✅ {t('Goal reached')}</strong><div className="small muted">{goalLabel(S, g)}</div></div>)}
     <div style={{ height: 10 }} />

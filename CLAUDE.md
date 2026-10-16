@@ -2,6 +2,19 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## This fork (slippylabs)
+
+This is the slippylabs fork running at https://fit.slippylabs.com, which replaced SlipFit. Read
+CHANGELOG-slippylabs.md first. In short:
+- **No AI, ever.** The upstream AI coach and MCP server are deleted; when merging upstream, drop
+  anything coach/LLM-related again (api/coach, frontend coach views/libs, mcp/).
+- Fork code lives in `frontend/src/lib/slip/` and `frontend/src/components/slip/`, plus a few
+  marked hooks in Home, Stats, Plan, Settings, Workout, App and sheets.jsx. `lib/slip/oracle/` holds
+  SlipFit's original logic as test fixtures; the ports are tested against it.
+- Fork versions are `slip-vX.Y.Z` tags; bump `SLIP_CHANGELOG` in `lib/slip/meta.js` and
+  CHANGELOG-slippylabs.md together. Deploy with `deploy/deploy.sh` (from a commit, never the tree).
+- Upstream's sections below still describe the codebase, minus the coach and MCP parts.
+
 ## What this is
 
 openGym is a self-hosted gym & body-weight tracker PWA. Two containers (`api` + `web`) plus a
@@ -15,15 +28,11 @@ License: AGPL-3.0-or-later.
 frontend/  React 19 + Vite app (src/views, src/components, src/store, src/lib). Builds to static files.
            android/ + ios/ are the Capacitor shells for the standalone mobile app (docs/MOBILE.md).
 api/       backend — server.js (Node, no framework), deps: @simplewebauthn/server, web-push.
-           coach/ is the optional AI coach; openapi.yaml documents every route.
+           openapi.yaml documents every route.
 web/       multi-stage Dockerfile (builds frontend → nginx) + nginx.conf.template (serves app, proxies /api).
-mcp/       optional MCP server — read-only stdio bridge exposing a user's workouts/1RM/muscle
-           balance to LLM clients (Claude Desktop, Cursor…). Not part of the Docker build; only
-           runs when an LLM client spawns it.
 media/     exercise img/gif, gitignored, fetched at runtime by the `media` compose service.
-website/   static project site (plain HTML/CSS/JS), deployed separately.
-kubernetes/ example manifests (docs/SELF_HOSTING_KUBERNETES.md).
-docs/      guides indexed in docs/README.md (FAQ, SELF_HOSTING*, MOBILE, AI_COACH, DATA_IMPORTS, API);
+deploy/    the slippylabs deployment: systemd unit, nginx vhost, deploy.sh.
+docs/      guides indexed in docs/README.md (FAQ, SELF_HOSTING*, MOBILE, DATA_IMPORTS, API);
            docs/dev/ holds feature design notes (SET_TYPES: drop sets/rest-pause, LIST_VIEW, COMBINE_ROUTINES).
 ```
 
@@ -106,15 +115,6 @@ gated by env vars: `ADMIN_UIDS` (admin dashboard), `INVITE_ONLY` (signup needs a
 `ALLOW_GUEST` (client-only guest mode never hits the server at all), plus a rotating
 `data/audit.log` (JSONL) for sign-in/admin events. Web Push (`web-push`, VAPID keys
 auto-generated into `data/vapid.json`) drives rest-timer-over and day-reminder notifications.
-
-### MCP server (`mcp/src`)
-
-Read-only stdio MCP bridge (`@modelcontextprotocol/sdk`) that lets an LLM client read a single
-user's routines/workouts/body-weight/1RM/muscle-balance directly from the same `DATA_DIR` the API
-writes to — no network call, no extra container. `state.js` loads/derives the data, `tools.js`
-defines the exposed MCP tools (zod-validated schemas), `labels.js` maps internal keys to
-human-readable labels, `index.js` wires it together. See `mcp/README.md` for the client-config
-side (Claude Desktop / Cursor).
 
 ### Passkeys and self-hosting constraints
 
