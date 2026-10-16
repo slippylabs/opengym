@@ -40,7 +40,7 @@ describe('workoutText', () => {
       '20×12',
       '',
       'Run',
-      '20 min @ 10 km/h',
+      '20 min @ 10 km/h · 3.3 km',
       '',
       'Felt strong.',
     ].join('\n'))
@@ -86,8 +86,8 @@ describe('workoutText speed unit', () => {
       { id: 'run', target: { mode: 'cardio' }, sets: [{ min: 20, speed: 16.09344, done: true }] },
     ] }
     const nameOf = () => 'run'
-    expect(workoutText(w, { unit: 'lb', nameOf, speedUnit: 'mph' }).split('\n').at(-1)).toBe('20 min @ 10 mph')
-    expect(workoutText(w, { unit: 'kg', nameOf }).split('\n').at(-1)).toBe('20 min @ 16.1 km/h')
+    expect(workoutText(w, { unit: 'lb', nameOf, speedUnit: 'mph' }).split('\n').at(-1)).toBe('20 min @ 10 mph · 3.3 mi')
+    expect(workoutText(w, { unit: 'kg', nameOf }).split('\n').at(-1)).toBe('20 min @ 16.1 km/h · 5.4 km')
   })
 })
 

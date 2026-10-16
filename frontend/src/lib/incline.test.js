@@ -55,12 +55,12 @@ describe('inclineFits', () => {
 
 describe('a set with an incline', () => {
   it('reads with its grade, and a flat or older set reads exactly as before', () => {
-    expect(setLabel(TREADMILL, { min: 30, speed: 5.5, incline: 12, done: true })).toBe('30 min @ 5.5 km/h · 12% incline')
-    expect(setLabel(TREADMILL, { min: 30, speed: 5.5, incline: 7.5 })).toBe('30 min @ 5.5 km/h · 7.5% incline')
-    expect(setLabel(TREADMILL, { min: 30, speed: 5.5, incline: 0 })).toBe('30 min @ 5.5 km/h')
-    expect(setLabel(TREADMILL, { min: 30, speed: 5.5 })).toBe('30 min @ 5.5 km/h')
+    expect(setLabel(TREADMILL, { min: 30, speed: 5.5, incline: 12, done: true })).toBe('30 min @ 5.5 km/h · 2.8 km · 12% incline')
+    expect(setLabel(TREADMILL, { min: 30, speed: 5.5, incline: 7.5 })).toBe('30 min @ 5.5 km/h · 2.8 km · 7.5% incline')
+    expect(setLabel(TREADMILL, { min: 30, speed: 5.5, incline: 0 })).toBe('30 min @ 5.5 km/h · 2.8 km')
+    expect(setLabel(TREADMILL, { min: 30, speed: 5.5 })).toBe('30 min @ 5.5 km/h · 2.8 km')
     // In mph too: the grade is a percentage either way.
-    expect(setLabel(TREADMILL, { min: 30, speed: 16.09344, incline: 4 }, null, 'mph')).toBe('30 min @ 10 mph · 4% incline')
+    expect(setLabel(TREADMILL, { min: 30, speed: 16.09344, incline: 4 }, null, 'mph')).toBe('30 min @ 10 mph · 5 mi · 4% incline')
   })
 
   it('knows which sets carry one and what a new row takes over', () => {
@@ -99,7 +99,7 @@ describe('a set with an incline', () => {
   it('is in the workout copied as text', () => {
     const w = { id: 'w', d: '2026-10-01', start: 0, end: 30 * 60000, name: 'Walk', vol: 0,
       entries: [{ id: TREADMILL, target: { mode: 'cardio' }, sets: [{ min: 30, speed: 5.5, incline: 12, done: true }] }] }
-    expect(workoutText(w, { unit: 'kg', nameOf: () => 'treadmill' })).toContain('30 min @ 5.5 km/h · 12% incline')
+    expect(workoutText(w, { unit: 'kg', nameOf: () => 'treadmill' })).toContain('30 min @ 5.5 km/h · 2.8 km · 12% incline')
   })
 
   it('is in the finish summary, which lists the cardio the lift rows leave out', () => {
@@ -112,7 +112,7 @@ describe('a set with an incline', () => {
     expect(rows).toHaveLength(1)
     expect(rows[0].id).toBe(TREADMILL)
     expect(rows[0].sets).toEqual([{ min: 20, speed: 5, incline: 9, done: true }])
-    expect(setLabel(rows[0].id, rows[0].sets[0], rows[0].target)).toBe('20 min @ 5 km/h · 9% incline')
+    expect(setLabel(rows[0].id, rows[0].sets[0], rows[0].target)).toBe('20 min @ 5 km/h · 1.7 km · 9% incline')
     expect(finishCardio({})).toEqual([])
   })
 })

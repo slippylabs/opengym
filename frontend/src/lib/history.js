@@ -2,6 +2,9 @@
 import { syncSupersetMeta } from './superset-meta.js'
 import { todayISO, isoOf, weekKey, weekStartOf, fmtNum } from './format.js'
 import { fmtSpeed } from './speed.js'
+// cardio.js reads entries through this module too; the cycle is safe because neither side
+// calls the other while the modules are still loading.
+import { rowKm, fmtDist } from './slip/cardio.js'
 import { hasIncline, inclineFrom } from './incline.js'
 import { isCardio, isBodyweightEq, isAssisted, betterWeight } from './exercises.js'
 import { barWeightFor } from './bar.js'
@@ -150,8 +153,14 @@ export function setLabel(id, s, cfg, speedUnit) {
   // custom one moved to Cardio after months of rep sets read them all as "0 min @ 0 km/h", next
   // to the volume those same sets still count. A set with reps and nothing cardio was a rep set.
   if (!EXPLICIT_MODES.has(cfg?.mode) && mode !== 'reps' && s.r > 0 && !(s.min > 0 || s.speed > 0 || s.sec > 0)) mode = 'reps'
-  // A treadmill grade rides along when the set has one (lib/incline.js); a flat set reads as it did.
-  if (mode === 'cardio') return `${s.min || 0} min @ ${fmtSpeed(s.speed || 0, speedUnit)}` + (hasIncline(s) ? ' · ' + t('{0}% incline', fmtNum(Number(s.incline))) : '')
+  // The distance the minutes and speed cover follows (lib/slip/cardio.js), in the speed unit's
+  // km or mi, and a treadmill grade after it when the set has one (lib/incline.js). A row with
+  // no speed covers no distance and reads as it did.
+  if (mode === 'cardio') {
+    const km = rowKm(s)
+    return `${s.min || 0} min @ ${fmtSpeed(s.speed || 0, speedUnit)}` + (km > 0 ? ' · ' + fmtDist(km, speedUnit) : '')
+      + (hasIncline(s) ? ' · ' + t('{0}% incline', fmtNum(Number(s.incline))) : '')
+  }
   // A set taken to failure carries its "F" behind the numbers, the mark lifting logs use for it;
   // the history, the text export and the set menu all read it from here.
   const fail = isFailureSet(s) ? ' ' + t('F') : ''

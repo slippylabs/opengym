@@ -9,6 +9,9 @@ import { t, exerciseNameFor, exerciseNameClass, getLang } from '../lib/i18n.js'
 import { bwSheet, goalSheet, calendarSheet, dayOverrideSheet, workoutDetailSheet, exerciseHistorySheet, WorkoutRow, bwDeltaColor, weighInsSheet } from '../sheets.jsx'
 import LineChart from '../components/LineChart.jsx'
 import Heatmap from '../components/Heatmap.jsx'
+import WeeklyBars from '../components/slip/WeeklyBars.jsx'
+import DistanceCard from '../components/slip/DistanceCard.jsx'
+import PrBoard from '../components/slip/PrBoard.jsx'
 import Icon from '../components/Icon.jsx'
 import BodyMap, { BodyMapLegend } from '../components/BodyMap.jsx'
 import { loadOfWeeklyPlan, loadOfWorkouts, muscleBalanceWindow, rankOf, MUSCLES, MUSCLE_NAME, musclesOf } from '../lib/muscles.js'
@@ -653,6 +656,11 @@ export default function Stats() {
         onDay={iso => { const ws = workouts.filter(w => workoutDay(w) === iso); if (ws.length === 1) workoutDetailSheet(ws[0]); else if (ws.length) calendarSheet(iso); else dayOverrideSheet(iso) }}
       />
     </div>
+    {/* How the weeks measure up to the weekly goal, and how far the cardio went: both read the
+        same log as the heatmap above, so they sit under it. The distance card hides itself
+        without cardio. */}
+    {workouts.length > 0 && <WeeklyBars S={S} />}
+    <DistanceCard S={S} />
 
     {(workouts.length > 0 || Object.keys(loadOfWeeklyPlan(S)).length > 0) && <MuscleBalance S={S} />}
     {S.routines.length > 0 && <WeeklyPlanVolume S={S} />}
@@ -744,6 +752,9 @@ export default function Stats() {
         </> : <div className="muted small">{t('Finish your first workout and your progress curves will show up here.')}</div>}
       </div>
     </div>
+
+    {/* Every exercise's bests, after the curve that follows one exercise at a time. */}
+    {workouts.length > 0 && <PrBoard S={S} />}
 
     {workouts.length > 0 && <>
       <div className="row between" style={{ marginBottom: 10 }}>

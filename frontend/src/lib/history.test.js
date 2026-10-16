@@ -59,7 +59,7 @@ describe('fmtSec', () => {
 describe('setLabel', () => {
   it('describes each mode in its own terms', () => {
     expect(setLabel(LIFT, { w: 60, r: 10 })).toBe('60×10')
-    expect(setLabel(CARDIO, { min: 20, speed: 9 })).toBe('20 min @ 9 km/h')
+    expect(setLabel(CARDIO, { min: 20, speed: 9 })).toBe('20 min @ 9 km/h · 3 km')
     expect(setLabel(LIFT, { sec: 45, w: 0 }, { mode: 'time' })).toBe('0:45')
     expect(setLabel(LIFT, { sec: 90, w: 20 }, { mode: 'time' })).toBe('1:30 · 20')
   })
@@ -72,7 +72,7 @@ describe('setLabel', () => {
   // A target built without an id (a freestyle one) and without a mode used to fall back to reps,
   // so a run read "0×0": the id the caller passes decides the mode then, as it does with no target.
   it('reads a cardio set by the exercise id when its target carries neither id nor mode', () => {
-    expect(setLabel(CARDIO, { min: 20, speed: 9 }, { sets: 1, min: 20, speed: 8 })).toBe('20 min @ 9 km/h')
+    expect(setLabel(CARDIO, { min: 20, speed: 9 }, { sets: 1, min: 20, speed: 8 })).toBe('20 min @ 9 km/h · 3 km')
     // a target that says otherwise still wins
     expect(setLabel(CARDIO, { sec: 45, w: 0 }, { mode: 'time' })).toBe('0:45')
   })
@@ -84,7 +84,7 @@ describe('setLabel', () => {
     expect(setLabel(CARDIO, { w: 50, r: 10 }, { sets: 3, reps: 10, weight: 50, bodyweight: false })).toBe('50×10')
     // no target at all: the catalogue's cardio entry is body weight, so the load reads as added
     expect(setLabel(CARDIO, { w: 50, r: 10 })).toBe('+50 × 10')
-    expect(setLabel(CARDIO, { min: 20, speed: 9, r: 0 }, { sets: 1 })).toBe('20 min @ 9 km/h')
+    expect(setLabel(CARDIO, { min: 20, speed: 9, r: 0 }, { sets: 1 })).toBe('20 min @ 9 km/h · 3 km')
     expect(setLabel(CARDIO, { w: 50, r: 10 }, { mode: 'cardio' })).toBe('0 min @ 0 km/h')
   })
 
@@ -318,7 +318,7 @@ describe('logging effort across a session', () => {
   it('never attaches effort to a mode that has no place for it', () => {
     // cardio and timed sets have no third stepper, and their labels ignore the field even
     // if an import or an old file put one there
-    expect(setLabel(CARDIO, { min: 20, speed: 9, rpe: 8 })).toBe('20 min @ 9 km/h')
+    expect(setLabel(CARDIO, { min: 20, speed: 9, rpe: 8 })).toBe('20 min @ 9 km/h · 3 km')
     expect(setLabel(LIFT, { sec: 45, rir: 2 }, { id: LIFT, mode: 'time' })).toBe('0:45')
   })
 })
@@ -1579,7 +1579,7 @@ describe('per-side volume and legacy timed sets (QA round 2026-09-12)', () => {
   })
   it('reads a timed or cardio set saved without a target from the set itself', () => {
     expect(setLabel('0001', { sec: 45, done: true })).toBe('0:45')
-    expect(setLabel('0001', { min: 20, speed: 8, done: true })).toBe('20 min @ 8 km/h')
+    expect(setLabel('0001', { min: 20, speed: 8, done: true })).toBe('20 min @ 8 km/h · 2.7 km')
     expect(setLabel('0025', { w: 60, r: 10, done: true })).toBe('60×10')
   })
 })
