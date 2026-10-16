@@ -831,6 +831,8 @@ export default function Settings({ page = null, find = null, via = null }) {
         <Row icon="sparkles" iconTint="var(--purple)" title={t('What\'s new')} value={'v' + SLIP_VERSION} accessory="chevron" onClick={whatsNewSheet} />
         <Row icon="chat" iconTint="var(--blue)" title={t('Send feedback')} subtitle={t('Report a bug or suggest a feature.')} accessory="chevron"
           onClick={() => window.open(feedbackUrl({ version: __APP_VERSION__, screen: 'Settings' }), '_blank', 'noopener')} />
+        <Row icon="lock" iconTint="var(--grey)" title={t('Privacy')} subtitle={t('What slippylabs stores, and why.')} accessory="chevron"
+          onClick={() => window.open('https://slippylabs.com/privacy.html', '_blank', 'noopener')} />
       </Section>
       {/* "Add to Home screen": not inside the phone app, and not once it is installed. */}
       {!MOBILE && !standalone() && <Section title={t('Tip')}>

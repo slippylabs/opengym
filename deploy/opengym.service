@@ -1,0 +1,35 @@
+[Unit]
+Description=fit.slippylabs.com openGym API (node, passkeys + per-user JSON state)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=opengym
+Group=opengym
+WorkingDirectory=/opt/opengym/api
+ExecStart=/usr/bin/node /opt/opengym/api/server.js
+# RP_ID, ORIGIN and the sign-up switches. Kept out of the unit so the unit can live in git.
+EnvironmentFile=/etc/opengym.env
+Environment=NODE_ENV=production
+Environment=PORT=8044
+Environment=HOST=127.0.0.1
+Environment=DATA_DIR=/var/lib/opengym
+# /var/lib/opengym, created 0700 for the service user: db.json (accounts, passkeys), one
+# state file per profile, the session secret, VAPID keys, uploads. The only place it writes.
+StateDirectory=opengym
+StateDirectoryMode=0700
+UMask=0077
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryHigh=256M
+
+[Install]
+WantedBy=multi-user.target
