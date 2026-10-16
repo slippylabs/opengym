@@ -11,19 +11,19 @@ import {
 } from './programs.js'
 
 // The ORACLE: SlipFit itself, loaded from its source the way its own tests load it (plain IIFE
-// scripts that also module.exports). Only where the original lives on this machine; elsewhere
-// the port is held to the conversion tests below alone.
-const SLIPFIT = '/home/slippy/fit.slippylabs.com/js'
-const haveOracle = existsSync(SLIPFIT + '/programs.js')
+// scripts that also module.exports).
+// SlipFit's files are vendored under ./oracle (see its README), so the oracle always runs.
+const SLIPFIT = new URL('./oracle', import.meta.url).pathname
+const haveOracle = existsSync(SLIPFIT + '/programs.cjs')
 const oracle = (() => {
   if (!haveOracle) return null
   const require = createRequire(import.meta.url)
-  const Ex = require(SLIPFIT + '/exercises.js')
+  const Ex = require(SLIPFIT + '/exercises.cjs')
   // The port never picks an exercise openGym's catalogue lacks (candidates() skips them), so
   // the original is asked the same question: its list without those. programs.js requires the
   // same module instance, so trimming LIST here is what its generator sees.
   for (let i = Ex.LIST.length - 1; i >= 0; i--) if (!ogIdOf(Ex.LIST[i].id)) Ex.LIST.splice(i, 1)
-  return { Ex, P: require(SLIPFIT + '/programs.js') }
+  return { Ex, P: require(SLIPFIT + '/programs.cjs') }
 })()
 
 // What the port adds to a SlipFit plan is `og` on every item, nothing else: strip it to compare,
@@ -36,7 +36,7 @@ describe('exercise map', () => {
     if (oracle) {
       // The untrimmed list: re-read the ids from the ROWS the map was written from.
       const require = createRequire(import.meta.url)
-      const src = require('node:fs').readFileSync(SLIPFIT + '/exercises.js', 'utf8')
+      const src = require('node:fs').readFileSync(SLIPFIT + '/exercises.cjs', 'utf8')
       const ids = [...src.matchAll(/^\s*\['([a-z0-9-]+)', ("[^"]*"|'[^']*'), '[a-z]+', '[a-z_]+', '[a-z]+', '[a-z]'/gm)].map(m => m[1])
       expect(SLIP_EXERCISES.map(e => e.id)).toEqual(ids)
     }
@@ -46,7 +46,7 @@ describe('exercise map', () => {
   it('carries SlipFit’s pattern, equipment and type unchanged', () => {
     if (!oracle) return
     const require = createRequire(import.meta.url)
-    const src = require('node:fs').readFileSync(SLIPFIT + '/exercises.js', 'utf8')
+    const src = require('node:fs').readFileSync(SLIPFIT + '/exercises.cjs', 'utf8')
     const rows = [...src.matchAll(/^\s*\['([a-z0-9-]+)', ("[^"]*"|'[^']*'), '[a-z]+', '([a-z_]+)', '([a-z]+)', '([a-z])'/gm)]
     expect(rows.length).toBe(SLIP_EXERCISES.length)
     for (const [, id, , pattern, equip, type] of rows) {

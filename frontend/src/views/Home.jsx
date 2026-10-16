@@ -18,6 +18,7 @@ import { dayNoteOf } from '../lib/day-notes.js'
 import { LevelCard, CheckinCard, GoalsCard } from '../components/slip/SlipCards.jsx'
 import ProgramCard from '../components/slip/ProgramCard.jsx'
 import { profileSheet } from '../components/slip/slip-sheets.jsx'
+import { planGeneratorSheet } from '../components/slip/PlanSheets.jsx'
 import { setupDone } from '../lib/slip/state.js'
 import { feedbackUrl } from '../lib/slip/meta.js'
 
@@ -175,7 +176,7 @@ export default function Home() {
         <div className="ttl">{t('Tell us about you')}</div>
       </div>
       <div className="muted small" style={{ marginBottom: 10 }}>{t('Your height, age and daily targets power the calculators, check-ins and your weekly streak.')}</div>
-      <Button size="sm" variant="tinted" onClick={() => profileSheet({ setup: true })}>{t('Set up')}</Button>
+      <Button size="sm" variant="tinted" onClick={() => profileSheet({ setup: true, onSaved: S.routines.length ? null : planGeneratorSheet })}>{t('Set up')}</Button>
     </div>}
     <LevelCard />
     <CheckinCard />
