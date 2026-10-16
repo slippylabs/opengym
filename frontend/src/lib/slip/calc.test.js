@@ -1,19 +1,16 @@
 import { createRequire } from 'node:module'
-import { existsSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import * as C from './calc.js'
 import { FORMULAS } from '../onerm.js'
 
 // Two layers. The oracle diffs this port against SlipFit's own js/calc.js, loaded as the CommonJS
 // module it also is, over a grid of inputs for every export: a transcription slip anywhere shows
-// up as a mismatch. It needs the SlipFit checkout beside this one, so it skips where that is
-// absent (CI). The worked values below it are SlipFit's tools/test_calc.js, ported: numbers
+// up as a mismatch. The worked values below it are SlipFit's tools/test_calc.js, ported: numbers
 // worked by hand from each published formula, or computed in Python from the formula's ORIGINAL
 // units (the Navy method's inch form, not the cm form calc.js uses), so they hold on their own.
 
-const SLIPFIT = '/home/slippy/fit.slippylabs.com/js/calc.js'
-const haveSlipFit = existsSync(SLIPFIT)
-const O = haveSlipFit ? createRequire(import.meta.url)(SLIPFIT) : null
+// SlipFit's calc.js is vendored under ./oracle (see its README), so the oracle always runs.
+const O = createRequire(import.meta.url)('./oracle/calc.cjs')
 
 // The seven 1RM formulas come from lib/onerm.js, where O'Conner is written w*(1 + r/40) and
 // SlipFit wrote w*(1 + 0.025*r): the same formula, which can differ in the last bit. Everything
@@ -39,7 +36,7 @@ const AGES = [14, 25, 40, 67, 90]
 const REPS = [0, 1, 2, 3, 5, 8, 10, 12, 13, 20, 1.5]
 const WEIGHTS = [-5, 0, 20, 62.5, 100, 140, 225]
 
-describe.skipIf(!haveSlipFit)('calc.js against SlipFit js/calc.js (oracle)', () => {
+describe('calc.js against SlipFit js/calc.js (oracle)', () => {
   it('exports the same names', () => {
     expect(Object.keys(C).sort()).toEqual(Object.keys(O).sort())
   })
