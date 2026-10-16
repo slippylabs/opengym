@@ -4,6 +4,7 @@
 // (progression, the .FIT export, the charts) keeps working unchanged.
 import { EXIDX } from '../exercises.js'
 import { metricRowsForEntry, workoutDay } from '../history.js'
+import { fmtNum } from '../format.js'
 
 export const KM_PER_MI = 1.609344
 
@@ -27,11 +28,31 @@ export const paceOf = (s, perMile = false) => {
   return perMile ? sec / (km / KM_PER_MI) : sec / km
 }
 
+/*
+ * Distance in the unit speeds are read in (lib/speed.js speedUnitOf): a profile on mph runs in
+ * miles, one on km/h in kilometres. Like speed, only what is shown and typed converts; the km a
+ * set covers is always worked out from its stored km/h.
+ */
+export const distUnitOf = speedUnit => (speedUnit === 'mph' ? 'mi' : 'km')
+export const toDist = (km, speedUnit) => (speedUnit === 'mph' ? (Number(km) || 0) / KM_PER_MI : Number(km) || 0)
+export const fromDist = (v, speedUnit) => (speedUnit === 'mph' ? (Number(v) || 0) * KM_PER_MI : Number(v) || 0)
+/** "5 km" or "3.1 mi" for a distance in km. */
+export const fmtDist = (km, speedUnit) => fmtNum(toDist(km, speedUnit)) + ' ' + distUnitOf(speedUnit)
+
+/** The km/h a typed distance (in the unit on screen) over `min` minutes takes. */
+export const speedForDist = (v, min, speedUnit) => speedFor(fromDist(v, speedUnit), min)
+
 /** "5:30" for a pace in seconds. */
 export const fmtPace = sec => {
   if (!(sec > 0) || !Number.isFinite(sec)) return '–'
   const r = Math.round(sec)
   return Math.floor(r / 60) + ':' + String(r % 60).padStart(2, '0')
+}
+
+/** "6:00 /km" (or "/mi") for a row, '' when it covers no distance. */
+export const paceLabel = (s, speedUnit) => {
+  const sec = paceOf(s, speedUnit === 'mph')
+  return sec ? fmtPace(sec) + ' /' + distUnitOf(speedUnit) : ''
 }
 
 const RUN_RE = /\b(run|running|jog|jogging|sprint|sprints|treadmill)\b/i
@@ -77,4 +98,26 @@ export function distanceTotals(S) {
     if (d) byDay[d] = (byDay[d] || 0) + km
   }
   return { total, byDay }
+}
+
+/**
+ * The Stats distance card: lifetime km, this calendar month's (by `today`, YYYY-MM-DD), and the
+ * longest single run row with its day. `has` is any cardio logged at all, distance or not, so a
+ * profile that only lifts never sees the card.
+ */
+export function distanceSummary(S, today) {
+  const month = String(today || '').slice(0, 7)
+  let total = 0, monthKm = 0, minutes = 0, longest = null
+  for (const w of S?.workouts || []) {
+    const { km, min } = workoutCardio(w)
+    if (!km && !min) continue
+    total += km
+    minutes += min
+    const d = workoutDay(w)
+    if (d && d.slice(0, 7) === month) monthKm += km
+    const run = longestRunKm(w, S)
+    // Equal runs keep the earlier one: the record is the day you first ran it.
+    if (run > 0 && (!longest || run > longest.km + 1e-9 || (Math.abs(run - longest.km) <= 1e-9 && d < longest.d))) longest = { km: run, d, wid: w.id }
+  }
+  return { has: total > 0 || minutes > 0, total, month: monthKm, longest }
 }

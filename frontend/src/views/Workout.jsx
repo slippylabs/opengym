@@ -11,6 +11,7 @@ import { loadKindFor, baseWeightFor, inventoryFor, rowLoad, sameLoad, plateDelta
 import { effectiveRoutines, effectiveRoutineIds, lastEntryFor, bestWeightFor, bestWeightForEntry, buildSets, freestyleConfig, defaultConfig, setsDoneActive, setUnitsTotal, supersetUnits, unitOf, setLabel, modeOf, isBw, isPerSide, repStep, EFFORT, effortOf, stepEffort, capEffort, cascadeWeight, insertWarmupRow, barFloor, makeWarmupAt, canBeWarmup, makeWorkAt, removeRowAt, removeLastSet, setSpanAt, copyRowAt, copySpanAt, insertRowAt, pairAdjacent, unpairSuperset, cleanupSg, applyIntensifierPlan, pinnedNoteFor, exNoteFor, setsRepsOf } from '../lib/history.js'
 import { fmtNum, fmtPlate, exerciseNameText, fmtDate, fmtDaysAgo, todayISO, exCount, DAYN } from '../lib/format.js'
 import { speedUnitOf, toSpeed, fromSpeed } from '../lib/speed.js'
+import { rowKm, toDist, distUnitOf, speedForDist, paceLabel } from '../lib/slip/cardio.js'
 import { clampIncline, hasIncline, inclineFits, inclineFrom, INCLINE_STEP } from '../lib/incline.js'
 import { beep, vibrate, unlock } from '../lib/sound.js'
 import { pinState } from '../lib/queue.js'
@@ -111,6 +112,11 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
   const swipeHint = useUI(s => (s.swipeHint?.idx === entryIdx ? s.swipeHint : null))
   const setFlash = useUI(s => (s.setFlash?.idx === entryIdx ? s.setFlash : null))
   const optsId = useId()
+  // The distance last typed on each cardio row, with the minutes and speed it produced: read back
+  // through the speed (kept to hundredths) a typed 10 can come out as 10.01, and the field would
+  // rewrite the number under your finger. While the row still holds what that typing made, the
+  // field shows what was typed.
+  const typedDist = useRef({})
   const entry = S.active.entries[entryIdx]
   // Drops/bursts mutate the row in place — same card, not a new set with its own long rest.
   // A planned exercise (see the exercise's "Intensifier" config) arrives with these already
@@ -288,6 +294,38 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
   const col2 = cardio ? { f: 'speed', step: 0.5, dec: true, hd: speedUnit === 'mph' ? t('Speed (mph)') : t('Speed (km/h)'),
     view: v => toSpeed(v, speedUnit), store: v => fromSpeed(v, speedUnit) }
     : timed ? loadCol : repCol
+  // Distance and pace sit on a line under each cardio row rather than in a fourth column: the
+  // incline already takes the third on a treadmill, and a phone row has no room for more. The
+  // distance is not stored (lib/slip/cardio.js): it is the minutes times the speed, and typing
+  // one sets the speed that covers it in those minutes.
+  const distUnit = distUnitOf(speedUnit)
+  const distShown = (s, i) => {
+    const typed = typedDist.current[i]
+    if (typed && typed.speed === s.speed && typed.min === s.min) return typed.v
+    return Math.round(toDist(rowKm(s), speedUnit) * 100) / 100 || ''
+  }
+  const setDistance = (i, v) => {
+    const fresh = useStore.getState().S.active?.entries[entryIdx]?.sets[i]
+    if (!(Number(fresh?.min) > 0)) return
+    const speed = speedForDist(v, fresh.min, speedUnit)
+    typedDist.current[i] = { v, speed, min: fresh.min }
+    onField(i, 'speed', speed)
+  }
+  const distLine = (s, i) => {
+    if (!(Number(s.min) > 0)) return null
+    const v = distShown(s, i)
+    const step = dir => setDistance(i, Math.max(0, Math.round(((Number(v) || 0) + dir * 0.5) * 100) / 100))
+    const pace = paceLabel(s, speedUnit)
+    return <div className="subrow distrow">
+      <span className="subn" style={{ width: 'auto', minWidth: 46 }}>{t('Distance')}</span>
+      <div className={'stp mini' + (wc.steppers ? '' : ' plain')}>
+        {wc.steppers && <button aria-label={t('Less distance')} onClick={() => step(-1)}><Icon name="minus" /></button>}
+        <span className="val"><NumberField value={v} onChange={nv => setDistance(i, nv)} aria-label={t('Distance ({0})', distUnit)} /></span>
+        {wc.steppers && <button aria-label={t('More distance')} onClick={() => step(1)}><Icon name="plus" /></button>}
+      </div>
+      <span className="dim small" style={{ flex: 'none' }}>{distUnit}{pace && <> · <span className="pace">{pace}</span></>}</span>
+    </div>
+  }
   // Effort (RIR or RPE, whichever the profile logs) only makes sense for weighted rep sets,
   // not cardio/timed holds, and is opt-in since it adds a third stepper to every row. `opt`
   // because an unlogged effort is not the same as 0 — RIR 0 says the set went to failure.
@@ -731,6 +769,7 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
             </button>
           </div>}
           {loadLine(String(i))}
+          {cardio && distLine(s, i)}
           {/* Drop-sets and rest-pause bursts extend this same row — no long rest, no new set.
               A planned exercise arrives with these already filled in (applyIntensifierPlan);
               every value here is just as editable as the main row's own weight/reps. */}
