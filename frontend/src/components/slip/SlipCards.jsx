@@ -3,7 +3,7 @@
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../../store/useStore.js'
-import { t, tn } from '../../lib/i18n.js'
+import { t } from '../../lib/i18n.js'
 import { todayISO, fmtNum, fmtDate } from '../../lib/format.js'
 import Icon from '../Icon.jsx'
 import { Button } from '../ui.jsx'
@@ -47,7 +47,7 @@ export function LevelCard() {
         </div>
         <Bar frac={lvl.into / lvl.need} />
         <div className="small muted" style={{ marginTop: 6 }}>
-          {st.current > 0 ? tn('{0}-week goal streak', '{0}-week goal streak', st.current) : t('No goal streak yet')}
+          {st.current > 0 ? t('Goal streak: {0} wk', st.current) : t('No goal streak yet')}
           {' · '}{t('weekly goal {0} of {1}', st.thisWeek, st.goal)}
           {st.best > st.current ? ' · ' + t('best {0}', st.best) : ''}
         </div>
@@ -129,6 +129,6 @@ export function GoalsCard() {
         </div>
       </div>
     })}
-    {done.length > 0 && <div className="small dim" style={{ marginTop: 8 }}>{tn('{0} goal reached', '{0} goals reached', done.length)}</div>}
+    {done.length > 0 && <div className="small dim" style={{ marginTop: 8 }}>{t('Goals reached: {0}', done.length)}</div>}
   </div>
 }

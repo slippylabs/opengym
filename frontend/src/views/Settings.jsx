@@ -397,7 +397,7 @@ export default function Settings({ page = null, find = null, via = null }) {
   const themeLabel = { dark: t('Dark'), light: t('Light'), system: t('System') }[S.theme || 'dark'] || t('Dark')
   // The value a root row shows, so most questions are answered without opening the page.
   const preview = {
-    profile: () => tn('{0} workout a week', '{0} workouts a week', targetsOf(S).weeklyGoal),
+    profile: () => t('{0}× a week', targetsOf(S).weeklyGoal),
     workout: () => (S.restSec > 0 ? t('{0} rest', fmtRest(S.restSec)) : t('No rest timer')) + ' · ' + layoutLabel,
     alerts: () => [S.sound ? t('Sound') : null, canVibrate && S.vibrate !== false ? t('Vibrate') : null, S.timerFlash ? t('Flash') : null].filter(Boolean).join(' · ') || t('Silent'),
     reminders: () => (S.reminder?.on ? (S.reminder.time || DEF.reminder?.time || '') : t('Off')),
@@ -617,7 +617,7 @@ export default function Settings({ page = null, find = null, via = null }) {
           <Row icon="person" iconTint="var(--purple)" title={t('Height, age and activity')} accessory="chevron" onClick={() => profileSheet()}
             subtitle={[b.sex === 'f' ? t('Female') : t('Male'), t('born {0}', b.birthYear), height].join(' · ')} />
           <Row icon="target" iconTint="var(--purple)" title={t('Daily and weekly targets')} accessory="chevron" onClick={() => profileSheet()}
-            subtitle={[tn('{0} workout a week', '{0} workouts a week', tg.weeklyGoal), t('{0} glasses', tg.water), tg.protein + ' g', tg.sleep + ' h', fmtNum(tg.steps) + ' ' + t('steps')].join(' · ')} />
+            subtitle={[t('{0}× a week', tg.weeklyGoal), t('{0} glasses', tg.water), tg.protein + ' g', tg.sleep + ' h', fmtNum(tg.steps) + ' ' + t('steps')].join(' · ')} />
         </Section>
       </>
     },

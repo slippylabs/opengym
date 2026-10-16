@@ -1,7 +1,7 @@
 // Level, XP and the 46 achievements carried over from SlipFit (lib/slip/game.js). Everything is
 // derived from the log; only the day each badge was first earned is stored.
 import { useNavigate } from 'react-router-dom'
-import { t, tn } from '../lib/i18n.js'
+import { t } from '../lib/i18n.js'
 import { fmtNum, fmtDate } from '../lib/format.js'
 import Icon from '../components/Icon.jsx'
 import { BADGES, XP, TITLES } from '../lib/slip/game.js'
@@ -53,8 +53,8 @@ export default function Achievements() {
     </div>
 
     <div className="tiles">
-      <div className="tile"><div className="l">{t('Goal streak')}</div><div className="v">{tn('{0} week', '{0} weeks', sum.st.current)}</div></div>
-      <div className="tile"><div className="l">{t('Best streak')}</div><div className="v">{tn('{0} week', '{0} weeks', sum.st.best)}</div></div>
+      <div className="tile"><div className="l">{t('Goal streak')}</div><div className="v">{t('{0} wk', sum.st.current)}</div></div>
+      <div className="tile"><div className="l">{t('Best streak')}</div><div className="v">{t('{0} wk', sum.st.best)}</div></div>
       <div className="tile"><div className="l">{t('Personal records')}</div><div className="v">{fmtNum(sum.prs)}</div></div>
       <div className="tile"><div className="l">{t('Exercises tried')}</div><div className="v">{fmtNum(sum.exercises)}</div></div>
     </div>
