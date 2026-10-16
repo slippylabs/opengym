@@ -9,6 +9,7 @@ import { t } from '../lib/i18n.js'
 import { ACCENT_NAMES } from '../lib/format.js'
 
 export const PAGES = {
+  profile: { title: 'Body & targets', icon: 'person', tint: 'var(--purple)' },
   workout: { title: 'Workout', icon: 'play', tint: 'var(--green)' },
   alerts: { title: 'Timer alerts', icon: 'speaker', tint: 'var(--pink)' },
   reminders: { title: 'Reminders', icon: 'bell', tint: 'var(--red)' },
@@ -24,7 +25,7 @@ export const PAGES = {
 export const PAGE_IDS = Object.keys(PAGES)
 
 // The root, top to bottom. Whether a row shows is pageVisible's call.
-export const ROOT_GROUPS = [['workout', 'alerts', 'reminders'], ['plan', 'units', 'equipment'], ['look'], ['data', 'about']]
+export const ROOT_GROUPS = [['profile'], ['workout', 'alerts', 'reminders'], ['plan', 'units', 'equipment'], ['look'], ['data', 'about']]
 
 /**
  * Whether a page exists for this device and profile. Reminders need a push server (signed in) or
@@ -47,6 +48,11 @@ const signedInWeb = c => !!c.user && !c.mobile && !c.demo
 const remind = c => !!c.mobile || !!c.pushOK
 const PUSH = 'Push notifications'
 export const SEARCH = [
+  { page: 'about', title: 'What\'s new', icon: 'sparkles', tint: 'var(--purple)', kw: 'changelog release notes version update' },
+  { page: 'about', title: 'Send feedback', icon: 'chat', tint: 'var(--blue)', kw: 'feedback bug report issue suggestion contact' },
+  // Body & targets (the slippylabs fork, carried over from SlipFit)
+  { page: 'profile', title: 'Height, age and activity', icon: 'person', tint: 'var(--purple)', kw: 'sex height age birth year activity profile body calculators' },
+  { page: 'profile', title: 'Daily and weekly targets', icon: 'target', tint: 'var(--purple)', kw: 'weekly goal streak water protein sleep steps targets check-in' },
   // Workout
   { page: 'workout', title: 'Rest timer', icon: 'timer', tint: 'var(--orange)', kw: 'rest pause break seconds minutes timer countdown' },
   { page: 'workout', title: 'Rest-pause rest', icon: 'bolt', tint: 'var(--orange)', kw: 'burst cluster rest pause' },

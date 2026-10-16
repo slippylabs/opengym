@@ -1,5 +1,11 @@
 // Hindi UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // --- slippylabs fork ---
+  'Body & targets': 'शरीर और लक्ष्य',
+  'Height, age and activity': 'ऊँचाई, उम्र और सक्रियता',
+  'Daily and weekly targets': 'दैनिक और साप्ताहिक लक्ष्य',
+  'What\'s new': 'नया क्या है',
+  'Send feedback': 'प्रतिक्रिया भेजें',
   'Confirm': 'पुष्टि करें',
   'Cancel': 'रद्द करें',
   'Press back again to exit': 'बाहर निकलने के लिए फिर से बैक दबाएँ',

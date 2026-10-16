@@ -45,6 +45,7 @@ import Admin from './views/Admin.jsx'
 import Measurements from './views/Measurements.jsx'
 import Tools from './views/Tools.jsx'
 import Achievements from './views/Achievements.jsx'
+import Rewards from './components/slip/Rewards.jsx'
 
 // last known scrollY per route, so back-navigation can put the page where it was
 const scrollPositions = new Map()
@@ -232,6 +233,7 @@ function Shell() {
           would ride along with the page for the length of it. Decides for itself when to show —
           including on the sign-in screen, when the server has just ended the session. */}
       <SyncBanner />
+      {authed && <Rewards />}
       {!noTabs && <TabBar onStart={startFlow} />}
       <RestTimer />
       <Modals />

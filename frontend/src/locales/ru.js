@@ -1,5 +1,11 @@
 // Russian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // --- slippylabs fork ---
+  'Body & targets': 'Тело и цели',
+  'Height, age and activity': 'Рост, возраст и активность',
+  'Daily and weekly targets': 'Дневные и недельные цели',
+  'What\'s new': 'Что нового',
+  'Send feedback': 'Отправить отзыв',
   'Confirm': 'Подтвердить',
   'Cancel': 'Отмена',
   'Press back again to exit': 'Нажмите «Назад» ещё раз, чтобы выйти',

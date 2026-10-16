@@ -1,5 +1,11 @@
 // Thai UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // --- slippylabs fork ---
+  'Body & targets': 'ร่างกายและเป้าหมาย',
+  'Height, age and activity': 'ส่วนสูง อายุ และกิจกรรม',
+  'Daily and weekly targets': 'เป้าหมายรายวันและรายสัปดาห์',
+  'What\'s new': 'มีอะไรใหม่',
+  'Send feedback': 'ส่งความคิดเห็น',
   // --- generic ---
   'Confirm': 'ยืนยัน',
   'Cancel': 'ยกเลิก',

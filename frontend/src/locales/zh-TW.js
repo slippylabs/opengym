@@ -1,4 +1,10 @@
 export default {
+  // --- slippylabs fork ---
+  'Body & targets': '身體與目標',
+  'Height, age and activity': '身高、年齡與活動量',
+  'Daily and weekly targets': '每日與每週目標',
+  'What\'s new': '新功能',
+  'Send feedback': '傳送意見',
   'Confirm': '確認',
   'Cancel': '取消',
   'Press back again to exit': '再按一次返回以退出',

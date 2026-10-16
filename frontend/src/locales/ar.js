@@ -1,5 +1,11 @@
 // Arabic UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // --- slippylabs fork ---
+  'Body & targets': 'الجسم والأهداف',
+  'Height, age and activity': 'الطول والعمر والنشاط',
+  'Daily and weekly targets': 'الأهداف اليومية والأسبوعية',
+  'What\'s new': 'ما الجديد',
+  'Send feedback': 'إرسال ملاحظات',
   'Confirm': 'تأكيد',
   'Cancel': 'إلغاء',
   'Press back again to exit': 'اضغط زر الرجوع مرة أخرى للخروج',

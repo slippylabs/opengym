@@ -1,5 +1,11 @@
 // Korean UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // --- slippylabs fork ---
+  'Body & targets': '신체 및 목표',
+  'Height, age and activity': '키, 나이, 활동량',
+  'Daily and weekly targets': '일일 및 주간 목표',
+  'What\'s new': '새로운 기능',
+  'Send feedback': '의견 보내기',
   'Confirm': '확인',
   'Cancel': '취소',
   'Press back again to exit': '뒤로를 한 번 더 누르면 종료됩니다',

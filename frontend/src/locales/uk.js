@@ -1,5 +1,11 @@
 // Ukrainian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // --- slippylabs fork ---
+  "Body & targets": "Тіло й цілі",
+  "Height, age and activity": "Зріст, вік і активність",
+  "Daily and weekly targets": "Денні й тижневі цілі",
+  "What's new": "Що нового",
+  "Send feedback": "Надіслати відгук",
   'Confirm': 'Підтвердити',
   'Cancel': 'Скасувати',
   'Press back again to exit': 'Натисни «Назад» ще раз, щоб вийти',

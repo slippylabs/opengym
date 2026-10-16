@@ -1,5 +1,11 @@
 // Turkish UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // --- slippylabs fork ---
+  'Body & targets': 'Vücut ve hedefler',
+  'Height, age and activity': 'Boy, yaş ve aktivite',
+  'Daily and weekly targets': 'Günlük ve haftalık hedefler',
+  'What\'s new': 'Yenilikler',
+  'Send feedback': 'Geri bildirim gönder',
   'Confirm': 'Onayla',
   'Cancel': 'İptal',
   'Press back again to exit': 'Çıkmak için geri tuşuna tekrar basın',

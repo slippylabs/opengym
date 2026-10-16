@@ -7,7 +7,10 @@ import { speedUnitOf } from '../lib/speed.js'
 import { formulaOf, FORMULA_NAMES } from '../lib/onerm.js'
 import { copyText } from '../lib/clipboard.js'
 import { useUI } from '../store/useUI.js'
-import { ACCENTS, ACCENT_NAMES, todayISO, localTZ, weekStartOf, MONDAY, SUNDAY, fmtPlate } from '../lib/format.js'
+import { ACCENTS, ACCENT_NAMES, todayISO, localTZ, weekStartOf, MONDAY, SUNDAY, fmtPlate, fmtNum } from '../lib/format.js'
+import { bodyOf, targetsOf } from '../lib/slip/state.js'
+import { profileSheet, whatsNewSheet, DISCLAIMER } from '../components/slip/slip-sheets.jsx'
+import { feedbackUrl, SLIP_VERSION } from '../lib/slip/meta.js'
 import { inventoryFor, ownsPlates } from '../lib/plates.js'
 import { dumbbellsOf } from '../lib/dumbbells.js'
 import { effortOf } from '../lib/history.js'
@@ -394,6 +397,7 @@ export default function Settings({ page = null, find = null, via = null }) {
   const themeLabel = { dark: t('Dark'), light: t('Light'), system: t('System') }[S.theme || 'dark'] || t('Dark')
   // The value a root row shows, so most questions are answered without opening the page.
   const preview = {
+    profile: () => tn('{0} workout a week', '{0} workouts a week', targetsOf(S).weeklyGoal),
     workout: () => (S.restSec > 0 ? t('{0} rest', fmtRest(S.restSec)) : t('No rest timer')) + ' · ' + layoutLabel,
     alerts: () => [S.sound ? t('Sound') : null, canVibrate && S.vibrate !== false ? t('Vibrate') : null, S.timerFlash ? t('Flash') : null].filter(Boolean).join(' · ') || t('Silent'),
     reminders: () => (S.reminder?.on ? (S.reminder.time || DEF.reminder?.time || '') : t('Off')),
@@ -603,6 +607,21 @@ export default function Settings({ page = null, find = null, via = null }) {
       </>
     },
 
+    // The slippylabs fork's profile (lib/slip/state.js): what the calculators, the daily check-ins
+    // and the weekly streak read. Edited in one sheet, the same one the first-run setup opens.
+    profile: () => {
+      const b = bodyOf(S), tg = targetsOf(S)
+      const height = S.unit === 'lb' ? Math.round(b.heightCm / 2.54) + ' in' : Math.round(b.heightCm) + ' cm'
+      return <>
+        <Section footer={t('Used by the calculators, the daily check-ins and the weekly streak.')}>
+          <Row icon="person" iconTint="var(--purple)" title={t('Height, age and activity')} accessory="chevron" onClick={() => profileSheet()}
+            subtitle={[b.sex === 'f' ? t('Female') : t('Male'), t('born {0}', b.birthYear), height].join(' · ')} />
+          <Row icon="target" iconTint="var(--purple)" title={t('Daily and weekly targets')} accessory="chevron" onClick={() => profileSheet()}
+            subtitle={[tn('{0} workout a week', '{0} workouts a week', tg.weeklyGoal), t('{0} glasses', tg.water), tg.protein + ' g', tg.sleep + ' h', fmtNum(tg.steps) + ' ' + t('steps')].join(' · ')} />
+        </Section>
+      </>
+    },
+
     reminders: () => <NotificationsCard S={S} update={update} toast={toast} />,
 
     plan: () => <>
@@ -806,6 +825,12 @@ export default function Settings({ page = null, find = null, via = null }) {
               accessory="chevron"
               onClick={() => (updateInfo?.hasUpdate ? onUpdateRowClick() : checkNow())} />
           : null}
+      </Section>
+      {/* The slippylabs fork: its release notes, the report form, and the disclaimer SlipFit carried. */}
+      <Section footer={t(DISCLAIMER)}>
+        <Row icon="sparkles" iconTint="var(--purple)" title={t('What\'s new')} value={'v' + SLIP_VERSION} accessory="chevron" onClick={whatsNewSheet} />
+        <Row icon="chat" iconTint="var(--blue)" title={t('Send feedback')} subtitle={t('Report a bug or suggest a feature.')} accessory="chevron"
+          onClick={() => window.open(feedbackUrl({ version: __APP_VERSION__, screen: 'Settings' }), '_blank', 'noopener')} />
       </Section>
       {/* "Add to Home screen": not inside the phone app, and not once it is installed. */}
       {!MOBILE && !standalone() && <Section title={t('Tip')}>

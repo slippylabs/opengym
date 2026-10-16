@@ -15,6 +15,11 @@ import { Button } from '../components/ui.jsx'
 import { tappable } from '../lib/use-sheet-keyboard.js'
 import { glyphOf } from '../lib/glyphs.js'
 import { dayNoteOf } from '../lib/day-notes.js'
+import { LevelCard, CheckinCard, GoalsCard } from '../components/slip/SlipCards.jsx'
+import ProgramCard from '../components/slip/ProgramCard.jsx'
+import { profileSheet } from '../components/slip/slip-sheets.jsx'
+import { setupDone } from '../lib/slip/state.js'
+import { feedbackUrl } from '../lib/slip/meta.js'
 
 // Home = what to do now + a quick glance. Deep charts & history live in Stats.
 export default function Home() {
@@ -103,7 +108,10 @@ export default function Home() {
   return <div className="narrow">
     <div className="hdr">
       <div><h1>{user ? t('Hi {0}', user.name) : 'openGym'}</h1><div className="sub">{today.toLocaleDateString(dateLocale(), { weekday: 'long', day: 'numeric', month: 'long' })}</div></div>
+      <div className="row" style={{ gap: 8 }}>
+      <button className="iconbtn" onClick={() => window.open(feedbackUrl({ version: __APP_VERSION__, screen: 'Home' }), '_blank', 'noopener')} aria-label={t('Send feedback')} title={t('Send feedback')}><Icon name="chat" /></button>
       <button className="iconbtn" onClick={() => nav('/settings')} aria-label={trouble ? t('Settings') + ', ' + t('Connection problem') : t('Settings')}><Icon name="gear" />{trouble && <span className="tab-dot" aria-hidden="true" />}</button>
+      </div>
     </div>
 
     <div className="card">
@@ -156,6 +164,30 @@ export default function Home() {
           {t('Choose a different workout')}
         </Button>
       </div>}
+    </div>
+
+    {/* The slippylabs fork's cards (SlipFit's Today screen): a program in progress, the first-run
+        profile, level and badges, today's check-in and goals. */}
+    <ProgramCard />
+    {!setupDone(S) && <div className="card">
+      <div className="row" style={{ gap: 10, marginBottom: 6 }}>
+        <span className="lrow-i" style={{ background: 'var(--purple)' }}><Icon name="person" /></span>
+        <div className="ttl">{t('Tell us about you')}</div>
+      </div>
+      <div className="muted small" style={{ marginBottom: 10 }}>{t('Your height, age and daily targets power the calculators, check-ins and your weekly streak.')}</div>
+      <Button size="sm" variant="tinted" onClick={() => profileSheet({ setup: true })}>{t('Set up')}</Button>
+    </div>}
+    <LevelCard />
+    <CheckinCard />
+    <GoalsCard />
+    <div className="card tappable" style={{ cursor: 'pointer' }} {...tappable(() => nav('/tools'))}>
+      <div className="row between">
+        <div className="row" style={{ gap: 9 }}>
+          <span className="lrow-i" style={{ background: 'var(--teal)' }}><Icon name="calculator" /></span>
+          <div><div className="lbl2">{t('Calories, BMI, 1RM, pace…')}</div><div className="ttl">{t('Calculators')}</div></div>
+        </div>
+        <Icon name="chevronRight" className="chev" />
+      </div>
     </div>
 
     {/* Jump to the gym check-in cards (QR membership codes). Shown here as a quick tap on

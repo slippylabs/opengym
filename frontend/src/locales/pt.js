@@ -1,5 +1,11 @@
 // Portuguese UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // --- slippylabs fork ---
+  'Body & targets': 'Corpo e objetivos',
+  'Height, age and activity': 'Altura, idade e atividade',
+  'Daily and weekly targets': 'Objetivos diários e semanais',
+  'What\'s new': 'Novidades',
+  'Send feedback': 'Enviar comentários',
   'Confirm': 'Confirmar',
   'Cancel': 'Cancelar',
   'Press back again to exit': 'Prima novamente para sair',

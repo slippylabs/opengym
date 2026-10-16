@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { trainingDaysIcs } from '../lib/slip/ics.js'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../store/useStore.js'
 import { useUI } from '../store/useUI.js'
@@ -141,8 +142,20 @@ export default function Plan() {
         { icon: 'note', label: t('Print / Save as PDF'), disabled: !has, onClick: printWholePlan },
         { icon: 'download', label: t('Import a plan file'), onClick: () => fileRef.current?.click() },
         { icon: 'clipboard', label: t('Load starter plan'), onClick: starterPlanSheet },
+        { icon: 'calendar', label: t('Add training days to my calendar'), sub: t('A calendar file (.ics) with a weekly event and alarm for each day that has a routine.'), disabled: mode === 'rotation' || !has, onClick: exportIcs },
       ],
     })
+  }
+  // SlipFit's calendar export (lib/slip/ics.js): opening the file adds the days to any calendar.
+  const exportIcs = () => {
+    const ics = trainingDaysIcs(S)
+    if (!ics) { useUI.getState().toast(t('No routine is planned on a weekday yet.')); return }
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }))
+    a.download = 'opengym-training-days.ics'
+    document.body.appendChild(a); a.click(); a.remove()
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000)
+    useUI.getState().toast(t('Open the downloaded file to add it to your calendar.'))
   }
   const pickFile = ev => { const f = ev.target.files[0]; ev.target.value = ''; importPlanFile(f) }
 

@@ -1,5 +1,11 @@
 // Simplified Chinese UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // --- slippylabs fork ---
+  'Body & targets': '身体与目标',
+  'Height, age and activity': '身高、年龄和活动量',
+  'Daily and weekly targets': '每日与每周目标',
+  'What\'s new': '新功能',
+  'Send feedback': '发送反馈',
   'Confirm': '确认',
   'Cancel': '取消',
   'Press back again to exit': '再按一次返回退出',

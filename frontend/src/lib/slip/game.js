@@ -200,8 +200,10 @@ export const LIFTS = {
   dead: ['0032', '0966', '0967', '6692'], // barbell deadlift and its camera angles
   ohp: ['1162', '1165', '0091'],         // barbell standing / seated military press
 }
-// "Train every muscle group in one week": the body parts SlipFit's six groups map onto.
-export const ALL_GROUPS = ['chest', 'back', 'shoulders', 'upper arms', 'upper legs', 'waist']
+// "Train every muscle group in one week": the body parts SlipFit's groups map onto. SlipFit had
+// biceps and triceps apart (both are 'upper arms' here), legs ('upper legs'), core ('waist') and
+// mobility, which has no body part of its own in this catalogue and is left out.
+export const ALL_GROUPS = ['chest', 'back', 'shoulders', 'upper arms', 'upper legs', 'waist', 'cardio']
 
 export function latestBodyweight(S) {
   const b = (S?.bodyweight || []).filter(x => Number(x?.w) > 0).slice().sort((a, c) => (a.d < c.d ? -1 : a.d > c.d ? 1 : 0))

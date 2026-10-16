@@ -1,5 +1,11 @@
 // Bengali UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // --- slippylabs fork ---
+  'Body & targets': 'শরীর ও লক্ষ্য',
+  'Height, age and activity': 'উচ্চতা, বয়স ও সক্রিয়তা',
+  'Daily and weekly targets': 'দৈনিক ও সাপ্তাহিক লক্ষ্য',
+  'What\'s new': 'নতুন কী',
+  'Send feedback': 'মতামত পাঠান',
   'Confirm': 'নিশ্চিত করুন',
   'Cancel': 'বাতিল',
   'Press back again to exit': 'বের হতে আবার ব্যাক চাপুন',

@@ -1,5 +1,11 @@
 // German UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // --- slippylabs fork ---
+  'Body & targets': 'Körper & Ziele',
+  'Height, age and activity': 'Größe, Alter und Aktivität',
+  'Daily and weekly targets': 'Tages- und Wochenziele',
+  'What\'s new': 'Neuigkeiten',
+  'Send feedback': 'Feedback senden',
   // --- generic ---
   'Confirm': 'Bestätigen',
   'Cancel': 'Abbrechen',

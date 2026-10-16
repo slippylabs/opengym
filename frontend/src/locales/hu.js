@@ -1,5 +1,11 @@
 // Hungarian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // --- slippylabs fork ---
+  'Body & targets': 'Test és célok',
+  'Height, age and activity': 'Magasság, életkor és aktivitás',
+  'Daily and weekly targets': 'Napi és heti célok',
+  'What\'s new': 'Újdonságok',
+  'Send feedback': 'Visszajelzés küldése',
   // --- generic ---
   'Confirm': 'Megerősítés',
   'Cancel': 'Mégse',
