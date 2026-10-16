@@ -43,6 +43,8 @@ import ProgressPhotos from './views/ProgressPhotos.jsx'
 import { SettingsRoute } from './views/Settings.jsx'
 import Admin from './views/Admin.jsx'
 import Measurements from './views/Measurements.jsx'
+import Tools from './views/Tools.jsx'
+import Achievements from './views/Achievements.jsx'
 
 // last known scrollY per route, so back-navigation can put the page where it was
 const scrollPositions = new Map()
@@ -214,6 +216,10 @@ function Shell() {
               <Route path="/structural-balance" element={<StructuralBalance />} />
               <Route path="/progress-photos" element={<ProgressPhotos />} />
               <Route path="/measurements" element={<Measurements />} />
+              {/* The slippylabs fork's screens: SlipFit's calculators and achievements. */}
+              <Route path="/tools" element={<Tools />} />
+              <Route path="/tools/:id" element={<Tools />} />
+              <Route path="/achievements" element={<Achievements />} />
               <Route path="/settings" element={<SettingsRoute />} />
               <Route path="/settings/:page" element={<SettingsRoute />} />
               <Route path="/admin" element={user?.admin ? <Admin /> : <Navigate to="/home" replace />} />

@@ -236,6 +236,9 @@ export const DEF = {
   // cleared) replaces that role's curated exercise-id whitelist with a single user-chosen
   // exercise id; the stamp is what lets a sync keep the choice made last (lib/sync-merge.js).
   balanceTemplate: DEFAULT_TEMPLATE_ID, balanceOverrides: {},
+  // The slippylabs fork's additions (lib/slip/state.js): profile and targets, daily check-ins,
+  // goals, badges and one-way program runs. Each a stamped map, merged entry by entry.
+  slipProfile: {}, daily: {}, slipGoals: {}, badges: {}, slipRuns: {},
 }
 const clone = o => JSON.parse(JSON.stringify(o))
 
