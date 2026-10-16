@@ -3,6 +3,12 @@
 // is what the app shows, newest first. The first entry's version is the fork's version.
 export const SLIP_CHANGELOG = [
   {
+    v: '1.1.0', d: '2026-10-16', items: [
+      'Sign in with your slippylabs.com account: signed in there, you are signed in here, and your profile is created the first time.',
+      'Already have a profile? Link it to your Slippy Labs account in Settings → Account.',
+    ],
+  },
+  {
     v: '1.0.0', d: '2026-10-16', items: [
       'fit.slippylabs.com now runs openGym, replacing SlipFit. Everything SlipFit did is here too.',
       'Calculators: calories and macros, BMI, body fat, one-rep max, plates, heart-rate zones, pace, calories burned, ideal weight, water, protein, waist-to-height.',

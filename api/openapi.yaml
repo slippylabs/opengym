@@ -237,6 +237,10 @@ paths:
                     description: >-
                       When false, the client hides "continue without account".
                       Guest mode is purely client-side and never calls this API.
+                  sso:
+                    type: boolean
+                    const: true
+                    description: Present when the server runs with SSO_HEADER (slippylabs fork); the client offers POST /api/sso/login.
                   session:
                     type: boolean
                     const: true
@@ -672,6 +676,50 @@ paths:
         '429': { $ref: '#/components/responses/TooManyRequests' }
         '503': { $ref: '#/components/responses/Busy' }
 
+  /api/sso/login:
+    post:
+      tags: [password]
+      operationId: ssoLogin
+      summary: Sign in with the reverse proxy's login (slippylabs fork)
+      description: |
+        Only when the server runs with `SSO_HEADER`; otherwise `404`. The reverse proxy asks its
+        own login who the browser is and passes the name in that header (and must strip the
+        header from every other request). The profile linked to that name (`sso`) is signed in;
+        when there is none, one is created and linked. Profiles are never matched by name.
+        **Not** CSRF-exempt.
+      security: []
+      responses:
+        '200':
+          description: Signed in (the profile created first if needed). The session cookie is set.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user: { $ref: '#/components/schemas/SessionUser' }
+        '401': { description: The proxy vouched for nobody (`code` sso). }
+        '403': { description: The linked profile is disabled (`code` disabled). }
+        '404': { description: Single sign-on is not configured on this server. }
+  /api/sso/link:
+    post:
+      tags: [password]
+      operationId: ssoLink
+      summary: Link the signed-in profile to the reverse proxy's login (slippylabs fork)
+      description: |
+        Only with `SSO_HEADER` (else `404`). From then on `POST /api/sso/login` opens this
+        profile for that login. `409 sso-taken` when the login already opens another profile.
+      responses:
+        '200':
+          description: Linked.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user: { $ref: '#/components/schemas/SessionUser' }
+        '401': { description: Not signed in here, or the proxy vouched for nobody. }
+        '404': { description: Single sign-on is not configured on this server. }
+        '409': { description: That login already opens another profile (`code` sso-taken). }
   /api/register/password:
     post:
       tags: [password]
@@ -2565,6 +2613,7 @@ components:
         id: { type: string, description: Stable user id (16 base64url chars). }
         name: { type: string }
         admin: { type: boolean }
+        sso: { type: string, description: "The reverse proxy login this profile is linked to (slippylabs fork; only when linked)." }
       example: { id: "Zk3q9XyPbA2LmN0v", name: "Ada", admin: false }
 
     # ------------------------------------------------------------------ WebAuthn

@@ -11,6 +11,7 @@ import { ACCENTS, ACCENT_NAMES, todayISO, localTZ, weekStartOf, MONDAY, SUNDAY, 
 import { bodyOf, targetsOf } from '../lib/slip/state.js'
 import { profileSheet, whatsNewSheet, DISCLAIMER } from '../components/slip/slip-sheets.jsx'
 import { feedbackUrl, SLIP_VERSION } from '../lib/slip/meta.js'
+import { SsoRow } from '../components/slip/Sso.jsx'
 import { inventoryFor, ownsPlates } from '../lib/plates.js'
 import { dumbbellsOf } from '../lib/dumbbells.js'
 import { effortOf } from '../lib/history.js'
@@ -878,6 +879,7 @@ export default function Settings({ page = null, find = null, via = null }) {
             onClick={() => window.open(REPO, '_blank', 'noopener')} />
         </> : user ? <>
           {user.admin && <Row icon="crown" iconTint="var(--indigo)" title={t('Admin dashboard')} accessory="chevron" onClick={() => nav('/admin')} />}
+          <SsoRow />
           <PasskeysRow state={passkeys.st} changed={credsChanged} />
           <DeviceLinkRow state={passkeys.st} />
           <Row icon="qr" iconTint="var(--blue)" title={t('Pair the mobile app')} subtitle={t('Connect the openGym app on your phone to this account.')} accessory="chevron"

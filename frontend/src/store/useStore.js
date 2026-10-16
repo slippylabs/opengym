@@ -1745,6 +1745,8 @@ export const useStore = create((set, get) => {
        Otherwise { owed: false } or { owed: true, count, stashed: true }, signed out. A workout
        running here is kept aside either way (stashActive), and the rest and hold timers stop. */
     async signOut({ force = false } = {}) {
+      // The slippylabs fork: no silent single sign-on straight back in (components/slip/Sso.jsx).
+      try { localStorage.setItem('slip-sso-auto', 'off') } catch { /* private mode */ }
       await settle()
       const left = get().unsyncedChanges()
       if (left.owed && !force) return owedResult(left)

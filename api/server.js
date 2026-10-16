@@ -68,6 +68,12 @@ const ALLOW_GUEST = !/^(0|false|no|off)$/i.test(process.env.ALLOW_GUEST || '');
 // every account that opts in, so an instance has to ask for it. While it is off every password
 // route answers 404 and the app shows none of it; hashes already stored stay where they are.
 const PASSWORD_LOGIN = /^(1|true|yes|on)$/i.test(process.env.PASSWORD_LOGIN || '');
+// Single sign-on from a reverse proxy (the slippylabs fork). When set, it names the request header
+// in which the proxy hands over the user its own login knows, on /api/sso/* only; the proxy must
+// strip the header from every other request, or anyone could claim any name. Unset, the routes
+// answer 404 and nothing reads the header.
+const SSO_HEADER = (process.env.SSO_HEADER || '').trim().toLowerCase();
+const SSO_NAME = /^[A-Za-z0-9_.@-]{1,64}$/;
 // The language the sign-in screen, and every profile that never picked one, starts in (#303) —
 // for an instance whose people share a language. Only a tag's shape is checked here; the app
 // matches it against the languages it has and ignores one it does not know. Unset, it is left
@@ -1091,7 +1097,14 @@ function loginTarget(body) {
 }
 const acctKey = u => 'acct:' + u.id;
 const passkeyCount = u => db.creds.filter(c => c.userId === u.id).length;
-const publicUser = u => ({ id: u.id, name: u.name, admin: isAdmin(u) });
+const publicUser = u => ({ id: u.id, name: u.name, admin: isAdmin(u), ...(u.sso ? { sso: u.sso } : {}) });
+// The site login the proxy vouched for: undefined when SSO is off, null when the header is absent
+// or malformed, else the name.
+const ssoUser = req => {
+  if (!SSO_HEADER) return undefined;
+  const v = String(req.headers[SSO_HEADER] || '').trim();
+  return SSO_NAME.test(v) ? v : null;
+};
 const POLICY_ERRORS = {
   'too-short': `the password needs at least ${MIN_LENGTH} characters`,
   'too-long': `the password can have at most ${MAX_LENGTH} characters`,
@@ -1326,6 +1339,43 @@ const passwordRoutes = {
     saveDb();
     audit(req, 'auth.register.ok', { user, msg: inv ? inv.code + ' · password' : 'password' });
     json(res, 200, { user: publicUser(user) }, { 'Set-Cookie': sessionCookie(user) });
+  },
+
+  // ---- single sign-on (slippylabs fork) ----
+  // The proxy has already asked its own login who this browser is and put the answer in
+  // SSO_HEADER. A profile is linked to that login by `sso`, never by name: anyone can create an
+  // openGym profile with any free name, so matching names would hand a stranger's profile over.
+  'POST /api/sso/login': async (req, res) => {
+    const who = ssoUser(req);
+    if (who === undefined) return json(res, 404, { error: 'not found' });
+    if (!who) return json(res, 401, { error: 'not signed in to the site', code: 'sso' });
+    let user = db.users.find(u => u.sso === who);
+    if (user && user.disabled) {
+      audit(req, 'auth.sso.fail', { ok: false, user, msg: 'account-disabled' });
+      return json(res, 403, { error: 'this account has been disabled', code: 'disabled' });
+    }
+    if (!user) {
+      const created = new Date().toISOString();
+      user = { id: crypto.randomBytes(12).toString('base64url'), name: who.slice(0, 40), created, sso: who };
+      db.users.push(user);
+      saveDb();
+      audit(req, 'auth.register.ok', { user, msg: 'sso' });
+    } else audit(req, 'auth.login.ok', { user, msg: 'sso' });
+    json(res, 200, { user: publicUser(user) }, { 'Set-Cookie': sessionCookie(user) });
+  },
+  // Links the signed-in profile to the site login, so that login opens it from now on.
+  'POST /api/sso/link': async (req, res) => {
+    const who = ssoUser(req);
+    if (who === undefined) return json(res, 404, { error: 'not found' });
+    const user = readSession(req);
+    if (!user) return json(res, 401, { error: 'not signed in' });
+    if (!who) return json(res, 401, { error: 'not signed in to the site', code: 'sso' });
+    const other = db.users.find(u => u.sso === who && u.id !== user.id);
+    if (other) return json(res, 409, { error: 'that site login already opens another profile', code: 'sso-taken' });
+    user.sso = who;
+    saveDb();
+    audit(req, 'auth.sso.link', { user, msg: who });
+    json(res, 200, { user: publicUser(user) });
   },
 
   // What Settings shows: whether a password is set, and whether it could be removed.
@@ -1924,6 +1974,8 @@ const routes = {
       // Public like the two flags above: the caps are not a secret, and the absence of the
       // block is how the app knows this server does not take photos and videos at all.
       ...(MEDIA_ON ? { media: mediaConfig(MEDIA_LIMITS) } : {}),
+      // Public too: whether "Sign in with Slippy Labs" is offered (the slippylabs fork's SSO).
+      ...(SSO_HEADER ? { sso: true } : {}),
       ...(readSession(req) ? { session: true } : {})
     });
   },

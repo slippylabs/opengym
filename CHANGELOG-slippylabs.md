@@ -7,6 +7,15 @@ own history is in [CHANGELOG.md](CHANGELOG.md); this file lists only what the fo
 Fork versions are semver on their own track, tagged `slip-vX.Y.Z`. The app shows them as the build
 suffix (`1.4.1+slip1.0.0`).
 
+## slip-v1.1.0 (2026-10-16)
+
+- **Sign in with Slippy Labs.** Anyone signed in to slippylabs.com is signed in here automatically,
+  with an openGym profile created and linked the first time. An existing profile can be linked in
+  Settings → Account. Profiles are linked by an explicit `sso` field, never matched by name.
+  nginx asks the admin console who the browser is and passes the name on `/api/sso/*` only
+  (`SSO_HEADER`); every other request has the header blanked. Signing out turns the automatic
+  sign-in off on that browser until "Sign in with Slippy Labs" is pressed again.
+
 ## slip-v1.0.0 (2026-10-16)
 
 First release at fit.slippylabs.com, replacing SlipFit. Every SlipFit feature openGym lacked is

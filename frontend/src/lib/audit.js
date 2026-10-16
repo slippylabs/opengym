@@ -29,6 +29,8 @@ const LABELS = {
   // Password sign-in (#118), where the instance offers it.
   'auth.password.ok': 'Signed in with a password',
   'auth.password.fail': 'Password sign-in failed',
+  'auth.sso.fail': 'Slippy Labs sign-in refused',
+  'auth.sso.link': 'Linked a Slippy Labs account',
   'auth.password.locked': 'Password sign-in paused after repeated failures',
   'auth.password.set': 'Set a password',
   'auth.password.change': 'Changed their password',
@@ -79,6 +81,7 @@ const REASONS = {
   'not-verified': 'the passkey was rejected',
   'user-missing': 'the passkey points at a profile that no longer exists',
   'account-disabled': 'the account is disabled',
+  'sso': 'with a Slippy Labs account',
   'credential-exists': 'that passkey already belongs to a profile',
   'invite-invalid': 'the invite code was used or revoked in the meantime',
   'invite-rejected': 'wrong or already-used invite code',
