@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { changeTitle } from './coach.js'
 
 // "Drop {0}" labels a drop set's sub-row ("Drop 1", lighter weight right after the set), sitting
-// next to the ✕ that removes it. It once also titled the Coach's "remove this exercise" change,
+// next to the ✕ that removes it. It once also titled a "remove this exercise" change,
 // and most packs had translated it as that ("1 streichen"), which read as a second delete button.
 const packs = import.meta.glob('../locales/*.js', { eager: true, import: 'default' })
 // The verbs the remove-meaning translations used, per pack. None may come back in the drop label.
@@ -22,7 +21,4 @@ describe('the drop-set sub-row label', () => {
     }
   })
 
-  it('is not what the Coach titles an exercise it takes out', () => {
-    expect(changeTitle({ type: 'remove-exercise', target: { exId: 'bench' } }, {})).toMatch(/^Remove /)
-  })
 })

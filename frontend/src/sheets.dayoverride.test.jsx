@@ -2,7 +2,7 @@
 // The day sheet's header names the plan the day would have without its override. In a coach
 // week that is the queue's session for the day, in front of the weekday's own routines — the
 // same answer the Home row gives — not the weekday list alone. The list itself puts the
-// week's remaining sessions first under 'Coach week': picking one pins it to the day (the
+// week's remaining sessions first under 'Planned week': picking one pins it to the day (the
 // same per-date override), and one already pinned to another day shows that day.
 import React, { act } from 'react'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
@@ -107,7 +107,7 @@ describe('Day sheet list in a coach week', () => {
     setS({ workouts: [logged('d1')] })
     dayOverrideSheet(todayISO())
     const host = renderTop()
-    expect(heading(host)).toBe('Coach week')
+    expect(heading(host)).toBe('Planned week')
     const [coach, plain] = lists(host)
     expect(coach).toEqual(['US W1 D2'])
     expect(plain).toEqual(['US W1 D1', 'Core', 'Rest / skip this day'])

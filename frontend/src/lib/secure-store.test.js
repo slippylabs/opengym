@@ -25,24 +25,24 @@ const SecureStorage = new Proxy({}, {
 })
 vi.mock('@aparajita/capacitor-secure-storage', () => ({ SecureStorage }))
 
-const secrets = await import('./coach-secrets.js')
+const secrets = await import('./secure-store.js')
 
 const within = (p, ms) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error(`hung for ${ms} ms`)), ms))])
 
-describe('coach-secrets against a Capacitor-style plugin proxy', () => {
+describe('secure-store against a Capacitor-style plugin proxy', () => {
   beforeEach(() => { calls.length = 0; backing.clear() })
 
   it('a round trip settles instead of waiting on the proxy\'s never-answering then()', async () => {
-    await within(secrets.setApiKey('sk-live-1'), 1000)
-    expect(await within(secrets.getApiKey(), 1000)).toBe('sk-live-1')
-    await within(secrets.clearApiKey(), 1000)
-    expect(await within(secrets.getApiKey(), 1000)).toBe(null)
+    await within(secrets.secureSet('k', 'v1'), 1000)
+    expect(await within(secrets.secureGet('k'), 1000)).toBe('v1')
+    await within(secrets.secureRemove('k'), 1000)
+    expect(await within(secrets.secureGet('k'), 1000)).toBe(null)
     expect(calls).not.toContain('then')
   })
 
   it('goes through the platform store, not the in-memory fallback', async () => {
-    await within(secrets.setApiKey('sk-live-2'), 1000)
-    expect([...backing.keys()]).toEqual(['coach.apiKey'])
+    await within(secrets.secureSet('k', 'v2'), 1000)
+    expect([...backing.keys()]).toEqual(['k'])
     expect(calls).toEqual(['set'])
   })
 })

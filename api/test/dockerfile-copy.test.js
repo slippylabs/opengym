@@ -1,4 +1,4 @@
-/* The api image carries only the files named on api/Dockerfile's COPY line (plus coach/). A
+/* The api image carries only the files named on api/Dockerfile's COPY line. A
    root-level module that server.js imports and that line forgets is invisible to every test run
    from the source tree and shows up only when the published image boots — as
    ERR_MODULE_NOT_FOUND, on every instance that pulled it. So the line is checked here, for
@@ -12,8 +12,7 @@ import { fileURLToPath } from 'node:url';
 const API = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = f => fs.readFileSync(path.join(API, f), 'utf8');
 
-// Every `./name.js` a file imports, statically or dynamically — root-level only; coach/ is
-// copied as a whole directory.
+// Every `./name.js` a file imports, statically or dynamically — root-level only.
 const rootImports = src => [...src.matchAll(/(?:from\s+|import\s*\(\s*)['"]\.\/([^'"/]+\.js)['"]/g)].map(m => m[1]);
 
 test('every root-level module server.js needs is on the Dockerfile COPY line', () => {

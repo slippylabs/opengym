@@ -4,11 +4,11 @@
 // CF-Access-Client-Id and CF-Access-Client-Secret, on every request to the server — the pairing
 // itself included, which is why they are entered before it (MobileOnboarding.jsx).
 //
-// Both live in the platform's secure storage (lib/coach-secrets.js), never in S or the pairing
+// Both live in the platform's secure storage (lib/secure-store.js), never in S or the pairing
 // file, together with the origin of the server they were entered for, and are handed to
 // lib/api.js, which adds them to requests to that origin and to nothing else: a token typed for
 // one server never travels to another one, not even to a pairing typed in by mistake.
-import { secureGet, secureSet, secureRemove } from './coach-secrets.js'
+import { secureGet, secureSet, secureRemove } from './secure-store.js'
 import { setAccessHeaders } from './api.js'
 
 const KEY = 'cfAccess'

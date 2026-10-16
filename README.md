@@ -41,6 +41,14 @@ on your phone, synced across your devices, behind your own passkey login.
 </tr>
 </table>
 
+> [!NOTE]
+> **This is the slippylabs fork of openGym**, running at <https://fit.slippylabs.com>. It differs
+> from [upstream](https://github.com/DuarteSantos8/openGym) in two ways: the AI coach and MCP
+> server are removed entirely (no AI features, by policy), and it adds the features of SlipFit, the
+> app it replaced: calculators, daily check-ins, goals, XP/levels/achievements, cardio distance,
+> more programs (incl. Couch to 5K) and a plan generator. See [CHANGELOG-slippylabs.md](CHANGELOG-slippylabs.md).
+> Licensed AGPL-3.0 like upstream.
+
 ## Why openGym
 
 Most workout apps keep your data on their servers, push you towards a subscription, or vanish
@@ -113,14 +121,6 @@ if you want to try it before installing anything.
 - 19 languages, including right-to-left Arabic and Traditional Chinese. Exercise names and
   instructions are translated for most of them.
 
-**Optional extras, off by default**
-
-- An [AI coach](docs/AI_COACH.md) that drafts a week of routines and later suggests changes based on
-  what you logged. You approve every change. It runs on your server with your own provider key
-  (Anthropic, OpenAI, Gemini or any OpenAI-compatible endpoint, Ollama included).
-- An [MCP server](mcp/README.md) so an assistant like Claude Desktop can answer questions about your
-  training history. Read-only and local; not part of the Docker build.
-
 The full list of what changed release by release is in the [changelog](CHANGELOG.md).
 
 ## Quick start
@@ -174,8 +174,6 @@ Traefik and nginx, and there are separate guides for
 | `AUDIT_IP` | Record the caller's address: `off`, `net` (network only) or `full` | `off` |
 | `ALLOWED_PRIVATE_IPS` | Private addresses push endpoints may resolve to (FakeDNS, split-horizon DNS): comma-separated IPs, `a-b` ranges or CIDR blocks | *(none)* |
 | `VAPID_SUBJECT` | Contact URL sent with push notifications | your `ORIGIN` |
-| `API_TARGET` | API image to build: `default`, or `coach` with the Claude Agent SDK and Codex CLI | `default` |
-| `COACH_DISABLED` | `1` forces the AI coach off instance-wide | *(unset)* |
 
 Push-notification keys are generated on first run into `./data/vapid.json`. `DATA_DIR` is pinned to
 `/data` inside the container and mapped to `./data` on the host; change the volume, not the
@@ -201,7 +199,7 @@ Details and build instructions: [docs/MOBILE.md](docs/MOBILE.md).
 <p align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/diagrams/architecture-dark.png">
-  <img src="docs/diagrams/architecture.png" alt="Architecture: the phone talks HTTPS to nginx (web), which serves the app and proxies /api to the Node api; the api stores JSON in ./data. The exercise media ship inside the web image; the AI coach and MCP server are optional." width="520">
+  <img src="docs/diagrams/architecture.png" alt="Architecture: the phone talks HTTPS to nginx (web), which serves the app and proxies /api to the Node api; the api stores JSON in ./data. The exercise media ship inside the web image; (the upstream AI coach and MCP server are removed in this fork)." width="520">
 </picture>
 </p>
 
@@ -259,7 +257,6 @@ The [documentation index](docs/README.md) sorts every guide by who it's for. The
 | Set up my own instance | [Self-hosting](docs/SELF_HOSTING.md) |
 | Use the Android or iPhone app | [Phone app](docs/MOBILE.md) |
 | Bring my history from another app | [Importing data](docs/DATA_IMPORTS.md) |
-| Turn on the AI coach | [AI coach](docs/AI_COACH.md) |
 | Contribute code | [Contributing](CONTRIBUTING.md) |
 | Report a security problem | [Security](SECURITY.md) |
 
@@ -318,11 +315,10 @@ What that does and doesn't mean:
   are the maintainer's call. Changes are tested on a staging instance and on real phones before
   they are tagged.
 - **Tests hold the logic in place.** The training logic is covered by unit tests, and pull requests
-  run the frontend, API and MCP suites in CI. That is the guard against plausible-looking code
+  run the frontend and API suites in CI. That is the guard against plausible-looking code
   that is wrong, whoever or whatever wrote it.
-- **The app itself doesn't need an LLM.** Nothing in a default install calls an AI service. The AI
-  coach and the MCP server are opt-in, and the coach only talks to the provider you configure, with
-  your own key.
+- **The app itself doesn't use AI.** This fork has the upstream AI coach and MCP server removed
+  entirely; nothing in it calls an AI service.
 
 Community pull requests are written by their authors, with whatever tools they like, and reviewed
 the same way.

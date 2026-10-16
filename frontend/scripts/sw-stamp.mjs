@@ -3,7 +3,7 @@
 
 // Language, instruction and exercise-name packs: a few hundred kB each, seventeen of them, and
 // the worker already keeps the one in use once it has loaded. Everything else that is split off
-// and loaded on demand (the photo and video ingest, the QR reader, the local Coach) is small,
+// and loaded on demand (the photo and video ingest, the QR reader) is small,
 // and offline it was simply missing until the page had needed it once with a network: the first
 // photo after an update, added at the gym, failed.
 const PACK = /[\\/]src[\\/](?:locales|instr|exercise-names)[\\/]/

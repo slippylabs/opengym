@@ -32,7 +32,6 @@ vi.mock('../store/useStore.js', () => {
 })
 vi.mock('react-router-dom', () => ({ useNavigate: () => mocks.nav }))
 vi.mock('../lib/mobile.js', () => ({ MOBILE: false, isAndroid: () => Promise.resolve(false), shareExport: vi.fn(), syncReminder: vi.fn() }))
-vi.mock('../lib/coach.js', () => ({ coachAvailable: () => mocks.coach }))
 vi.mock('../sheets.jsx', () => ({
   starterPlanSheet: vi.fn(), dayAssignSheet: vi.fn(), menuSheet: vi.fn(), confirmSheet: vi.fn(),
   planHasRoutines: s => (s.routines || []).some(r => r.ex.length), exportPlanFile: vi.fn(), printWholePlan: vi.fn(), importPlanFile: vi.fn(),
@@ -94,16 +93,7 @@ describe('Plan — the menu', () => {
 
   const coachButton = () => [...host.querySelectorAll('.hdr button')].find(b => b.textContent === 'Coach')
 
-  it('has its own Coach button in the header when the Coach is available, not a menu entry', () => {
-    mocks.coach = true
-    mount()
-    expect(host.textContent).not.toContain('Plan design and reviews')
-    expect(openMenu().items.filter(Boolean).map(i => i.label)).not.toContain('Coach')
-    act(() => coachButton().click())
-    expect(mocks.nav).toHaveBeenCalledWith('/coach')
-  })
-
-  it('leaves the Coach out where it is not available', () => {
+  it('has no Coach anywhere: the AI Coach is not part of this build', () => {
     mount()
     expect(coachButton()).toBeUndefined()
     expect(openMenu().items.filter(Boolean).map(i => i.label)).not.toContain('Coach')

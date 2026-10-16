@@ -21,7 +21,6 @@ import { appBase } from '../lib/app-base.js'
 import { linkTokenFromSearch, stripLinkFromUrl } from '../lib/device-link.js'
 import { loadRemote, chooseLocal, forgetRemote, connect, normalizeServerUrl, renewToken } from '../lib/remote.js'
 import { loadCfAccess } from '../lib/cf-access.js'
-import { loadCoachDevice, saveCoachDevice, coachDeviceSettings } from '../lib/coach-device.js'
 import { RTL_LANGS } from '../lib/i18n-core.js'
 import { DEFAULT_TEMPLATE_ID } from '../lib/structuralBalanceTemplates.js'
 
@@ -1302,21 +1301,12 @@ export const useStore = create((set, get) => {
     ready: false,
     // The connection as the screens show it — see statusOf above for every field.
     sync: sync0,
-    /* Instance capabilities from GET /api/config. `config.coach` is present only when the owner
-       has both enabled the Coach and connected a provider — every Coach entry point in the app
-       hangs off it via coachAvailable(), so an unconfigured instance renders exactly what it
-       always did, and a configured one is the only place any of it appears. */
+    // Instance capabilities from GET /api/config.
     config: null,
     needsMobileOnboarding: false,   // mobile build only — set true by boot() on a genuine first launch
     // A one-time device-link code this page was opened with (?link=, #95), until it is redeemed.
     // Never persisted: the code is good for minutes and belongs to this one visit.
     linkCode: null,
-    // Mobile build only: how the Coach runs on this phone — { mode: 'off'|'server'|'byok',
-    // provider, model, baseUrl } from lib/coach-device.js. Never the key, never a proposal.
-    coachLocal: null,
-    async setCoachLocal(patch) {
-      set({ coachLocal: coachDeviceSettings(await saveCoachDevice(patch)) })
-    },
 
     // Mutate a draft of S via producer fn, then persist + schedule sync. Every routine the change
     // touched carries the time of it, for a conflict to keep the version edited last.
@@ -1490,7 +1480,7 @@ export const useStore = create((set, get) => {
       if (get().config) return get().config
       return get().refreshConfig()
     },
-    // Always asks. The cached copy is right for one boot, but an admin can switch the Coach on
+    // Always asks. The cached copy is right for one boot, but an admin can change a setting
     // while a paired phone sits on the setup screen — that screen wants today's answer.
     // Two callers that ask at once get one request: signing in re-asks (setUser) and the pairing
     // flow awaits a refresh of its own immediately after, and there is one answer to have.
@@ -1564,13 +1554,10 @@ export const useStore = create((set, get) => {
         if (!adopt && !other && owner !== u.id) persist(get().S, false, false)
         // The file follows at once, as the new account's: until then it holds the previous one's.
         if (other && MOBILE) nativePersist(true)
-        // The server answers /api/config with a `coach` key only to a session — the block, or
-        // null on an instance that has no Coach. So a copy with no key at all is one fetched
-        // before this sign-in (boot's, or the login screen asking for invite_only), and every
-        // Coach entry point would stay hidden until the next reload. Ask again, unawaited:
-        // nothing on this path waits for the answer. A copy that has the key was made for a
-        // session and is already the right answer, Coach or no Coach.
-        if (get().config && !('coach' in get().config)) get().refreshConfig()
+        // The server answers /api/config with `session: true` only to a session, so a copy
+        // without it was fetched before this sign-in (boot's, or the login screen asking for
+        // invite_only). Ask again, unawaited: nothing on this path waits for the answer.
+        if (get().config && !get().config.session) get().refreshConfig()
       } else { rejoined = false; adoptHold = false; localStorage.removeItem('gym_user') }
       set({ user: u })
       setSync({ held: adoptHold })
@@ -1786,7 +1773,7 @@ export const useStore = create((set, get) => {
       if (keeping) { await keeping; keeping = null }
       pairedBase = normalizeServerUrl(url)
       setSync({ server: pairedBase })
-      await get().refreshConfig()   // what this server offers (the Coach, guest mode) — see boot()
+      await get().refreshConfig()   // what this server offers (guest mode, password sign-in) — see boot()
       await get().adoptProfile(ask)
       await nativePersist(true)   // the file holds this account's copy before anything else can happen
       set({ needsMobileOnboarding: false })
@@ -1843,7 +1830,6 @@ export const useStore = create((set, get) => {
         const remote = await loadRemote()
         // Before the first request: a server behind Cloudflare Access answers nothing without it.
         await loadCfAccess({ pairedBase: remote?.mode === 'remote' ? remote.base : '' })
-        set({ coachLocal: coachDeviceSettings(await loadCoachDevice()) })
         if (remote?.mode === 'remote') {
           setRemoteAuth(remote.base, remote.token)
           pairedBase = remote.base || null
@@ -1856,9 +1842,7 @@ export const useStore = create((set, get) => {
             // that is used at all.
             if (typeof me.token === 'string' && me.token) await renewToken(remote, me.token)
             get().setUser(me.user)
-            // The paired server's /api/config, the same one the web boot reads: without it the
-            // phone never learned whether the server offers the Coach and told everyone "your
-            // server has no Coach enabled" — with the admin looking at a green test.
+            // The paired server's /api/config, the same one the web boot reads.
             await get().loadConfig()
             // Closed with the pairing's question still open: asked again, and nothing is pulled
             // or pushed until it is answered — this copy may still be the one from before pairing.

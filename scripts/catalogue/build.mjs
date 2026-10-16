@@ -13,11 +13,9 @@
 //   frontend/src/instr/<lang>.js              instruction steps, loaded with the language
 //   frontend/src/exercise-names/<lang>.js     translated names, loaded with the language
 //   frontend/src/exercise-desc/<lang>.js      descriptions, loaded when one is shown
-// and then api/coach/core/library-data.js through build-coach-assets.mjs.
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { execFileSync } from 'node:child_process'
 import { validateCatalogue } from './validate.mjs'
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
@@ -119,6 +117,5 @@ if (check) {
   if (stale.length) { console.error('Out of date, run node scripts/catalogue/build.mjs:\n  ' + stale.join('\n  ')); process.exit(1) }
   console.log(`catalogue: ${rows.length} exercises, generated files up to date`)
 } else {
-  execFileSync(process.execPath, [path.join(ROOT, 'scripts/build-coach-assets.mjs')], { stdio: 'inherit' })
   console.log(`catalogue: ${rows.length} exercises, ${stale.length} file(s) rewritten`)
 }

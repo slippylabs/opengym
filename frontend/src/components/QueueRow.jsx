@@ -25,7 +25,7 @@ export default function QueueRow({ S, today, onStart, managed }) {
   const shownToday = !!next && effectiveRoutineIds(S, today, today).includes(next.id)
   // A pass this app manages refills itself (lib/rotation.js) — "ask the coach" and naming a
   // whole week are a planner's copy, wrong for a pass with no coach and no week shape at all.
-  const status = v.complete ? (managed ? t('Round complete') : t('Week complete, ask the coach'))
+  const status = v.complete ? (managed ? t('Round complete') : t('Week complete'))
     : v.waiting ? (managed ? t('Next round starts {0}.', fmtDate(v.startsOn, true)) : t('Next week starts {0}', fmtDate(v.startsOn, true)))
     : shownToday ? t('Next: {0}, today', next.name)
     : next ? t('Next: {0}', next.name)
