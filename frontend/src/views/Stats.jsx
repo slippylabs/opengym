@@ -647,6 +647,17 @@ export default function Stats() {
 
     </div>
 
+    {/* Level, XP and the achievements (the slippylabs fork, from SlipFit). */}
+    <div className="card tappable" style={{ cursor: 'pointer' }} {...tappable(() => nav('/achievements'))}>
+      <div className="row between">
+        <div className="row" style={{ gap: 9 }}>
+          <span className="lrow-i" style={{ background: 'var(--yellow)' }}><Icon name="trophy" /></span>
+          <div><div className="lbl2">{t('Level, XP and badges')}</div><div className="ttl">{t('Achievements')}</div></div>
+        </div>
+        <Icon name="chevronRight" className="chev" />
+      </div>
+    </div>
+
     <div className="card">
       <h2>{t('Activity (last 12 months)')}</h2>
       <Heatmap

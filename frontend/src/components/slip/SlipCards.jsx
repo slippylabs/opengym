@@ -16,7 +16,7 @@ import './slip-ui.css'
 
 export function Bar({ frac, tone = '', thin = false }) {
   const pct = Math.round(Math.max(0, Math.min(1, frac || 0)) * 100)
-  return <div className={'slip-bar' + (tone ? ' ' + tone : '') + (thin ? ' thin' : '')} role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>
+  return <div className={'slip-prog' + (tone ? ' ' + tone : '') + (thin ? ' thin' : '')} role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>
     <span style={{ width: pct + '%' }} />
   </div>
 }

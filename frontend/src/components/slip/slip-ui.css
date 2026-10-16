@@ -1,11 +1,11 @@
 /* The slippylabs fork's Home cards, achievements and sheets. Built from the app's own tokens so
    every theme and accent reaches them. */
 
-.slip-bar{height:8px;border-radius:4px;background:var(--surface-2);overflow:hidden}
-.slip-bar > span{display:block;height:100%;border-radius:4px;background:var(--acc);transition:width .4s ease}
-.slip-bar.good > span{background:var(--green)}
-.slip-bar.warn > span{background:var(--yellow)}
-.slip-bar.thin{height:5px}
+.slip-prog{height:8px;border-radius:4px;background:var(--surface-2);overflow:hidden}
+.slip-prog > span{display:block;height:100%;border-radius:4px;background:var(--acc);transition:width .4s ease}
+.slip-prog.good > span{background:var(--green)}
+.slip-prog.warn > span{background:var(--yellow)}
+.slip-prog.thin{height:5px}
 
 .slip-level{display:flex;align-items:center;gap:12px}
 .slip-level .lv{flex:none;width:52px;height:52px;border-radius:50%;display:grid;place-items:center;
