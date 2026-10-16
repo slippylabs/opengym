@@ -12,6 +12,7 @@ import { beep, vibrate } from './lib/sound.js'
 import { t, tn, dateLocale, instrFor, instrTranslated, descFor, exerciseNameFor, exerciseNameClass, getLang, useLang } from './lib/i18n.js'
 import { nav, closeThenNav, navToWorkout } from './lib/nav.js'
 import { buildStarterPlan, starterPlanDays, starterPlanOptions } from './lib/starter.js'
+import { MorePlans } from './components/slip/PlanSheets.jsx'
 import Media, { Thumb } from './components/Media.jsx'
 import CustomMediaField from './components/CustomMediaField.jsx'
 import WorkoutMediaSection, { workoutMediaCount } from './components/WorkoutMedia.jsx'
@@ -171,14 +172,13 @@ const PLAN_COPY = {
   '5x5': () => ({ name: t('5×5'), about: t('Five sets of five on the main barbell lifts.') })
 }
 
-// Adds the plan's routines (reusing one you already have under the same name) and puts them on
-// its weekdays. Existing routines are never touched
-// and only the weekdays the plan asks for are reassigned; an id with no plan behind it changes
-// nothing at all. planId is deliberately required — a default invites `onClick={loadStarterPlan}`,
-// which hands the click event in as the plan and silently loads nothing.
-export function loadStarterPlan(planId, profile) {
-  const plan = buildStarterPlan(planId, profile ? profileEquipment(profile) : undefined)
-  if (!plan) return false
+// Adds a built plan's routines (reusing one you already have under the same name) and puts them
+// on its weekdays: the one way a plan reaches the store, for the starter plans here and for
+// SlipFit's plans (components/slip/PlanSheets.jsx). Existing routines are never touched and only
+// the weekdays the plan asks for are reassigned. `then(st, idOf)` runs inside the same update,
+// with idOf mapping each plan routine id to the routine that now stands for it, so whatever a
+// plan keeps beside its routines (a Couch to 5K run record) is written together with them.
+export function applyPlan(plan, then) {
   update(st => {
     // Loading the same plan again reuses the routines it added last time (same name, same
     // exercises) for the weekdays instead of a second Upper A, Lower A, ... under the same names.
@@ -191,35 +191,48 @@ export function loadStarterPlan(planId, profile) {
       else { st.routines.push(r); idOf[r.id] = r.id }
     })
     plan.schedule.forEach(({ day, routineId }) => { st.week[day] = [idOf[routineId]] })
+    if (then) then(st, idOf)
   })
+}
+
+// An id with no plan behind it changes nothing at all. planId is deliberately required: a
+// default invites `onClick={loadStarterPlan}`, which hands the click event in as the plan and
+// silently loads nothing.
+export function loadStarterPlan(planId, profile) {
+  const plan = buildStarterPlan(planId, profile ? profileEquipment(profile) : undefined)
+  if (!plan) return false
+  applyPlan(plan)
   if (plan.fit) toast(t('{0} loaded, fitted to "{1}": {2} swapped, {3} dropped', PLAN_COPY[planId]().name, profile.name, plan.fit.swapped, plan.fit.dropped))
   else toast(t('{0} loaded', PLAN_COPY[planId]().name))
   return true
+}
+
+// Loads straight away when the plan's weekdays are free. A confirmation is only worth showing
+// when one of those days is actually occupied, by a routine that still exists, not by a stale
+// id the Plan already shows as "Rest".
+export function confirmPlanDays(days, name, onLoad) {
+  const { week, routines } = S()
+  const taken = day => [].concat(week[day] || []).some(id => routines.some(r => r.id === id))
+  if (!days.some(taken)) { onLoad(); return }
+  confirmSheet({
+    title: t('Load {0}?', name),
+    message: t('The new plan goes on {0}. Your existing routines stay; only those days of the weekly plan change.', dayList(days)),
+    confirmText: t('Load plan'),
+    onConfirm: onLoad
+  })
 }
 
 // Intl joins the days the way each language does it — "and" vs "und", "、" in Chinese.
 const dayList = days => new Intl.ListFormat(dateLocale()).format(days.map(d => t(DAYN[d])))
 
 function StarterPlanChooser({ close }) {
-  const week = useStore(s => s.S.week)
-  const routines = useStore(s => s.S.routines)
   const profiles = useStore(s => s.S.equipProfiles) || []
   // Fitting starts on for the profile you already filter by; '' leaves the plan as written.
   const [fitId, setFitId] = useState(() => activeProfile(useStore.getState().S)?.id || '')
   const fit = profiles.find(p => p.id === fitId) || null
   const choose = (id, name) => {
-    const days = starterPlanDays(id)
     close()
-    // A confirmation is only worth showing when one of those days is actually occupied — by a
-    // routine that still exists, not by a stale id the Plan already shows as "Rest".
-    const taken = day => [].concat(week[day] || []).some(id => routines.some(r => r.id === id))
-    if (!days.some(taken)) { loadStarterPlan(id, fit); return }
-    confirmSheet({
-      title: t('Load {0}?', name),
-      message: t('The new plan goes on {0}. Your existing routines stay; only those days of the weekly plan change.', dayList(days)),
-      confirmText: t('Load plan'),
-      onConfirm: () => loadStarterPlan(id, fit)
-    })
+    confirmPlanDays(starterPlanDays(id), name, () => loadStarterPlan(id, fit))
   }
   return <>
     <h3>{t('Choose starter plan')}</h3>
@@ -240,6 +253,7 @@ function StarterPlanChooser({ close }) {
         </div>
       })}
     </div>
+    <MorePlans close={close} />
   </>
 }
 
