@@ -1,0 +1,58 @@
+/* The slippylabs additions carried over from SlipFit (views/Tools.jsx so far). Sits on the app's
+   tokens and reuses its classes (card, tiles, measure-form, sect-b, chips); only what those do
+   not cover lives here. */
+
+/* the small caption above a control that is not a labelled field (Segmented, chip rows) */
+.slip-label{color:var(--label-2);font-size:13px;margin:0 2px 6px}
+.slip-tools .card .seg{margin-bottom:14px}
+.slip-tools .card .measure-form{margin-bottom:14px}
+.slip-tools .card>.measure-form:last-child{margin-bottom:0}
+.slip-select{margin-bottom:14px}
+.slip-gap{margin:-6px 2px 14px}
+.slip-chips{margin:0 -4px 8px}
+.slip-chips .chip{text-transform:none}
+.slip-time{background:var(--surface-2);height:47px;padding:0 12px;font-size:18px;font-weight:500}
+
+/* the headline number of a calculator */
+.slip-result{text-align:center;padding-top:18px;padding-bottom:18px}
+.slip-result-l{font-size:15px;font-weight:600;margin-top:4px}
+.slip-result-s{margin-top:6px;line-height:1.4}
+.slip-note{margin:2px 4px 12px;line-height:1.4}
+.slip-tools>.btn.sm{margin-bottom:16px}
+
+/* three tiles to a row where the stock grid has two; a long locale's label may wrap */
+.slip-tiles3 .tiles{grid-template-columns:repeat(3,minmax(0,1fr))}
+.slip-tiles3 .tile .l{overflow-wrap:anywhere}
+.slip-tiles3 .tile .v{font-size:20px}
+
+/* BMI: where you sit on 15–40, with the WHO cut-offs (18.5, 25, 30) as the colour changes */
+.slip-scale{
+  position:relative;height:10px;border-radius:99px;margin:4px 6px 6px;
+  background:linear-gradient(90deg,var(--blue) 0 14%,var(--green) 14% 40%,var(--yellow) 40% 60%,var(--red) 60% 100%);
+}
+.slip-scale>span{
+  position:absolute;top:-4px;width:4px;height:18px;margin-left:-2px;border-radius:2px;
+  background:var(--label);box-shadow:0 0 0 2px var(--bg);
+}
+.slip-scale-l{position:relative;height:18px;margin:0 6px 10px}
+.slip-scale-l>span{position:absolute;transform:translateX(-50%)}
+.slip-scale-l>span:nth-child(1){left:14%}
+.slip-scale-l>span:nth-child(2){left:40%}
+.slip-scale-l>span:nth-child(3){left:60%}
+
+/* plate loader: one side of the bar, plates sized by weight, collar on the left */
+.slip-bar{display:flex;align-items:center;justify-content:center;gap:2px;min-height:100px;margin:4px 0 10px;overflow:hidden}
+.slip-bar-end{width:10px;height:26px;border-radius:3px;background:var(--label-3)}
+.slip-bar-shaft{flex:0 1 90px;min-width:30px;height:10px;border-radius:0 5px 5px 0;background:var(--label-3)}
+.slip-plate{
+  display:flex;align-items:center;justify-content:center;width:22px;border-radius:4px;
+  background:var(--acc);color:var(--on-acc);font-size:10px;font-weight:600;writing-mode:vertical-rl;
+}
+
+/* heart-rate zones: a colour bar per zone, cool to hot */
+.slip-zone{border-inline-start:4px solid var(--z,var(--label-3))}
+.slip-zone.z1{--z:var(--blue)}
+.slip-zone.z2{--z:var(--green)}
+.slip-zone.z3{--z:var(--yellow)}
+.slip-zone.z4{--z:var(--orange)}
+.slip-zone.z5{--z:var(--red)}
